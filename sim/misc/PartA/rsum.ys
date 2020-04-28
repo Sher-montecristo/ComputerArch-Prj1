@@ -1,0 +1,50 @@
+# 518030910211 ZiqiZhao
+
+# Set up stack
+    .pos    0
+    irmovl  stack, %esp
+    rrmovl  %esp, %ebp
+    irmovl  ele1, %eax
+    pushl   %eax
+    call    rsum_list
+    halt
+
+# Sample linked list 
+.align 4
+ele1:
+    .long   0x00a
+    .long   ele2
+ele2:
+    .long   0x0b0
+    .long   ele3
+ele3:
+    .long   0xc00
+    .long   0
+
+# rsum_list func
+rsum_list:
+    pushl   %ebp            # enter
+    rrmovl  %esp, %ebp
+    xorl    %eax, %eax
+    mrmovl  8(%ebp), %edx   # get ls
+    andl    %edx, %edx
+    je      return          # ls == NULL
+do:
+    pushl   %ebx            # save %ebx
+    mrmovl  (%edx), %ebx    # mov ls->val to %ebx
+    mrmovl  4(%edx), %eax
+    pushl   %eax            # push ls->next
+    call    rsum_list
+    addl    %ebx, %eax      # ret = val + ret
+    popl    %edx            # eat para
+    popl    %ebx            # restore %ebx
+return:
+    rrmovl  %ebp, %esp      # leave
+    popl    %ebp
+    ret
+
+
+# Stack 
+    .pos    0x400
+stack:
+

@@ -1,0 +1,47 @@
+# 518030910211 ZiqiZhao
+
+# Set up stack
+    .pos    0
+    irmovl  stack, %esp
+    rrmovl  %esp, %ebp
+    irmovl  ele1, %eax
+    pushl   %eax
+    call    sum_list
+    halt
+
+# Sample linked list 
+.align 4
+ele1:
+    .long   0x00a
+    .long   ele2
+ele2:
+    .long   0x0b0
+    .long   ele3
+ele3:
+    .long   0xc00
+    .long   0
+
+# sum_list func
+sum_list:
+    pushl   %ebp            # enter
+    rrmovl  %esp, %ebp
+    xorl    %eax, %eax      # clear %eax
+    mrmovl  8(%ebp), %edx   # get ls
+    jmp     test
+loop:
+    mrmovl  (%edx), %ecx
+    addl    %ecx, %eax
+    mrmovl  4(%edx), %edx
+test:
+    andl    %edx, %edx
+    jne     loop
+return:
+    rrmovl  %ebp, %esp      # leave
+    popl    %ebp
+    ret
+
+
+# Stack 
+    .pos    0x400
+stack:
+
