@@ -1,20 +1,20 @@
 # 518030910211 ZiqiZhao
 
-# Fetch:	icode:ifun	<- M1[PC]
-#			rA:rB		<- M1[PC + 1]
-#			valC		<- M4[PC + 2]
-#			valP		<- PC + 6
+# Fetch:    icode:ifun  <- M1[PC]
+#           rA:rB       <- M1[PC + 1]
+#           valC        <- M4[PC + 2]
+#           valP        <- PC + 6
 #
-# Decode:	valB		<- R[rB]
+# Decode:   valB        <- R[rB]
 #
-# Execute:	valE		<- valB + valC
-#			Set CC
+# Execute:  valE        <- valB + valC
+#           Set CC
 #
-# Memory:	<do nothing>
+# Memory:   <do nothing>
 #
-# WrtBack:	R[rB]		<- valE
+# WrtBack:  R[rB]       <- valE
 #
-# PCUpdate: PC			<- valP
+# PCUpdate: PC          <- valP
 
 
 #/* $begin seq-all-hcl */
