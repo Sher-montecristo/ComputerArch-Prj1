@@ -1,0 +1,37 @@
+# 518030910188 YiminZhao
+
+# Set up stack
+    .pos    0
+    irmovl  stack, %esp
+    rrmovl  %esp, %ebp
+    irmovl  ele1, %eax
+    pushl   %eax
+    call    rsum_list
+    halt
+
+# Sample linked list 
+.align 4
+ele1:
+    .long   0x00a
+    .long   ele2
+ele2:
+    .long   0x0b0
+    .long   ele3
+ele3:
+    .long   0xc00
+    .long   0
+
+# rsum_list func
+rsum_list:
+    pushl   %ebp
+    rrmovl  %esp, %ebp
+
+
+return:
+    rrmovl  %ebp, %esp
+    popl    %ebp
+
+# Stack 
+    .pos    0x400
+stack:
+

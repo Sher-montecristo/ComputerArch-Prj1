@@ -27,11 +27,11 @@ int sum_list(list_ptr ls)
 int rsum_list(list_ptr ls)
 {
     if (!ls)
-	return 0;
+	    return 0;
     else {
-	int val = ls->val;
-	int rest = rsum_list(ls->next);
-	return val + rest;
+        int val = ls->val;
+        int rest = rsum_list(ls->next);
+        return val + rest;
     }
 }
 

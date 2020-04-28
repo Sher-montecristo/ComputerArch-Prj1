@@ -1,4 +1,5 @@
 # 518030910211 ZiqiZhao
+# 518030910188 YiminZhao
 
 # Set up stack
     .pos    0
@@ -7,6 +8,7 @@
     irmovl  ele1, %eax
     pushl   %eax
     call    sum_list
+    popl    %eax          # flatten the stack
     halt
 
 # Sample linked list 
@@ -34,7 +36,7 @@ loop:
     mrmovl  4(%edx), %edx
 test:
     andl    %edx, %edx
-    jne     loop
+    jne     loop            # %edx != 0
 return:
     rrmovl  %ebp, %esp      # leave
     popl    %ebp
