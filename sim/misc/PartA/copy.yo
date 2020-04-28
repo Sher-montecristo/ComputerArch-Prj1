@@ -1,0 +1,64 @@
+                      | # 518030910211 ZiqiZhao
+                      | 
+                      | # Set up stack
+  0x000:              |     .pos    0
+  0x000: 30f400040000 |     irmovl  stack, %esp
+  0x006: 2045         |     rrmovl  %esp, %ebp
+  0x008: 30f003000000 |     irmovl  $3, %eax
+  0x00e: a00f         |     pushl   %eax
+  0x010: 30f034000000 |     irmovl  dest, %eax
+  0x016: a00f         |     pushl   %eax
+  0x018: 30f028000000 |     irmovl  src, %eax
+  0x01e: a00f         |     pushl   %eax
+  0x020: 8040000000   |     call    copy_block
+  0x025: 00           |     halt
+                      | 
+  0x028:              | .align 4
+                      | # Source block
+  0x028:              | src:
+  0x028: 0a000000     |     .long 0x00a
+  0x02c: b0000000     |     .long 0x0b0
+  0x030: 000c0000     |     .long 0xc00
+                      | 
+                      | # Destination block
+  0x034:              | dest:
+  0x034: 11010000     |     .long 0x111
+  0x038: 22020000     |     .long 0x222
+  0x03c: 33030000     |     .long 0x333
+                      | 
+                      | # sum_list func
+  0x040:              | copy_block:
+  0x040: a05f         |     pushl   %ebp            # enter
+  0x042: 2045         |     rrmovl  %esp, %ebp
+  0x044: a03f         |     pushl   %ebx            # save %ebx
+  0x046: a07f         |     pushl   %edi            # save %edi -> imm
+  0x048: a06f         |     pushl   %esi            # save %esi -> val
+  0x04a: 6300         |     xorl    %eax, %eax      # result
+  0x04c: 503510000000 |     mrmovl  16(%ebp), %ebx   # len
+  0x052: 50250c000000 |     mrmovl  12(%ebp), %edx  # dest
+  0x058: 501508000000 |     mrmovl  8(%ebp), %ecx  # src
+  0x05e:              | loop:
+  0x05e: 30f704000000 |     irmovl  $4, %edi
+  0x064: 506100000000 |     mrmovl  (%ecx), %esi
+  0x06a: 6071         |     addl    %edi, %ecx
+  0x06c: 406200000000 |     rmmovl  %esi, (%edx)
+  0x072: 6072         |     addl    %edi, %edx
+  0x074: 6360         |     xorl    %esi, %eax
+  0x076: 30f7ffffffff |     irmovl  $-1, %edi
+  0x07c: 6073         |     addl    %edi, %ebx
+  0x07e:              | test:
+  0x07e: 6233         |     andl    %ebx, %ebx
+  0x080: 765e000000   |     jg     loop
+  0x085:              | return:
+  0x085: b06f         |     popl    %esi
+  0x087: b07f         |     popl    %edi
+  0x089: b03f         |     popl    %ebx
+  0x08b: 2054         |     rrmovl  %ebp, %esp      # leave
+  0x08d: b05f         |     popl    %ebp
+  0x08f: 90           |     ret
+                      | 
+                      | 
+                      | # Stack 
+  0x400:              |     .pos    0x400
+  0x400:              | stack:
+                      | 
