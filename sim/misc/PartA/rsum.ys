@@ -1,12 +1,16 @@
 # 518030910211 ZiqiZhao
+# 518030910188 YiminZhao
 
 # Set up stack
     .pos    0
     irmovl  stack, %esp
     rrmovl  %esp, %ebp
+    pushl   %edx
     irmovl  ele1, %eax
     pushl   %eax
     call    rsum_list
+    popl    %edx           # eat ele1
+    popl    %edx           # restore %edx
     halt
 
 # Sample linked list 
