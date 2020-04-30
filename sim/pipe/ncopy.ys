@@ -1,6 +1,9 @@
 #/* $begin ncopy-ys */
 
 # Bugen's note: to evalute this program, run:
+#  > make psim  [if necessary]
+#  > ../misc/yas ncopy.ys
+#  > ./check-len.pl < ncopy.yo
 #  > ./correctness.pl -p
 #  > ./benchmark.pl
 
@@ -11,7 +14,15 @@
 # Include your name and ID here.
 # 518030910211, ZiqiZhao
 # Describe how and why you modified the baseline code.
-#
+# - Avoid "load and use":
+#   For the pipeline design in CS:APP 2e, "load and use" or "mrmovq" then "rmmovq" will lead to penalty,
+#  which must be avoided to improve the performance. On the one hand, we rearranged the order of
+#  instructions to avoid stalling as much as possible. On the other hand, we use two registers to store
+#  the variable "val" , loading them separately and ahead of time.
+# - Loop unrolling:
+#   There's much overhead in testing and updating procedure of loops, and one way to minimize it is to
+#  perform a technique named "loop unrolling". That is, we do multiple loops and update the relevant 
+#  data at once, to reduce the number of times we execute the 'add' and 'jxx' instructions. 
 ##################################################################
 # Do not modify this portion
 # Function prologue.

@@ -1,0 +1,142 @@
+                      | #/* $begin ncopy-ys */
+                      | 
+                      | # Bugen's note: to evalute this program, run:
+                      | #  > make psim  [if necessary]
+                      | #  > ./correctness.pl -p
+                      | #  > ./benchmark.pl
+                      | 
+                      | ##################################################################
+                      | # ncopy.ys - Copy a src block of len ints to dst.
+                      | # Return the number of positive ints (>0) contained in src.
+                      | #
+                      | # Include your name and ID here.
+                      | # 518030910211, ZiqiZhao
+                      | # Describe how and why you modified the baseline code.
+                      | # - Avoid "load and use":
+                      | #   For the pipeline design in CS:APP 2e, "load and use" or "mrmovq" then "rmmovq" will lead to penalty,
+                      | #  which must be avoided to improve the performance. On the one hand, we rearranged the order of
+                      | #  instructions to avoid stalling as much as possible. On the other hand, we use two registers to store
+                      | #  the variable "val" , loading them separately and ahead of time.
+                      | # - Loop unrolling:
+                      | #   There's much overhead in testing and updating procedure of loops, and one way to minimize it is to
+                      | #  perform a technique named "loop unrolling". That is, we do multiple loops and update the relevant 
+                      | #  data at once, to reduce the number of times we execute the 'add' and 'jxx' instructions. 
+                      | ##################################################################
+                      | # Do not modify this portion
+                      | # Function prologue.
+  0x000: a05f         | ncopy:	pushl %ebp		# Save old frame pointer
+  0x002: 2045         | 	rrmovl %esp,%ebp	# Set up new frame pointer
+  0x004: a06f         | 	pushl %esi		# Save callee-save regs
+  0x006: a03f         | 	pushl %ebx
+  0x008: a07f         | 	pushl %edi
+  0x00a: 503508000000 | 	mrmovl 8(%ebp),%ebx	# src
+  0x010: 502510000000 | 	mrmovl 16(%ebp),%edx	# len
+  0x016: 50150c000000 | 	mrmovl 12(%ebp),%ecx	# dst
+                      | 
+                      | ##################################################################
+                      | # You can modify this portion
+                      | 
+                      | # Bugen: Entry
+  0x01c: 6300         | 	xorl %eax,%eax		# count = 0
+  0x01e: c0f2f7ffffff | 	iaddl $-9, %edx		# len -= 9, i.e., initial_len <= 9?
+  0x024: 713a010000   | 	jle Remaining		# if so, goto Remaining
+                      | 
+                      | # Bugen: Loop unrolling part
+  0x029:              | Loop0:	
+  0x029: 506300000000 | 	mrmovl (%ebx), %esi	# valA = src[0]
+  0x02f: 507304000000 | 	mrmovl 4(%ebx), %edi	# valB = src[1]
+  0x035: 406100000000 | 	rmmovl %esi, (%ecx)	# dst[0] = valA
+  0x03b: 6266         | 	andl %esi, %esi		# valA <= 0?
+  0x03d: 7148000000   | 	jle Loop1		# if so, goto next loop
+  0x042: c0f001000000 | 	iaddl $1, %eax		# count++
+  0x048:              | Loop1:	
+  0x048: 506308000000 | 	mrmovl 8(%ebx), %esi	# valA = src[2]
+  0x04e: 407104000000 | 	rmmovl %edi, 4(%ecx)	# dst[1] = valB
+  0x054: 6277         | 	andl %edi, %edi		# valB <= 0?
+  0x056: 7161000000   | 	jle Loop2		# if so, goto next loop
+  0x05b: c0f001000000 | 	iaddl $1, %eax		# count++
+  0x061:              | Loop2:
+  0x061: 50730c000000 | 	mrmovl 12(%ebx), %edi	# valB = src[3]
+  0x067: 406108000000 | 	rmmovl %esi, 8(%ecx)	# dst[2] = valA
+  0x06d: 6266         | 	andl %esi, %esi		# valA <= 0?
+  0x06f: 717a000000   | 	jle Loop3		# if so, goto next loop
+  0x074: c0f001000000 | 	iaddl $1, %eax		# count++
+  0x07a:              | Loop3:	
+  0x07a: 506310000000 | 	mrmovl 16(%ebx), %esi	# valA = src[4]
+  0x080: 40710c000000 | 	rmmovl %edi, 12(%ecx)	# dst[3] = valB
+  0x086: 6277         | 	andl %edi, %edi		# valB <= 0?
+  0x088: 7193000000   | 	jle Loop4		# if so, goto next loop
+  0x08d: c0f001000000 | 	iaddl $1, %eax		# count++
+  0x093:              | Loop4:
+  0x093: 507314000000 | 	mrmovl 20(%ebx), %edi	# valB = src[5]
+  0x099: 406110000000 | 	rmmovl %esi, 16(%ecx)	# dst[4] = valA
+  0x09f: 6266         | 	andl %esi, %esi		# valA <= 0?
+  0x0a1: 71ac000000   | 	jle Loop5		# if so, goto next loop
+  0x0a6: c0f001000000 | 	iaddl $1, %eax		# count++
+  0x0ac:              | Loop5:	
+  0x0ac: 506318000000 | 	mrmovl 24(%ebx), %esi	# valA = src[6]
+  0x0b2: 407114000000 | 	rmmovl %edi, 20(%ecx)	# dst[5] = valB
+  0x0b8: 6277         | 	andl %edi, %edi		# valB <= 0?
+  0x0ba: 71c5000000   | 	jle Loop6		# if so, goto next loop
+  0x0bf: c0f001000000 | 	iaddl $1, %eax		# count++
+  0x0c5:              | Loop6:
+  0x0c5: 50731c000000 | 	mrmovl 28(%ebx), %edi	# valB = src[7]
+  0x0cb: 406118000000 | 	rmmovl %esi, 24(%ecx)	# dst[6] = valA
+  0x0d1: 6266         | 	andl %esi, %esi		# valA <= 0?
+  0x0d3: 71de000000   | 	jle Loop7		# if so, goto next loop
+  0x0d8: c0f001000000 | 	iaddl $1, %eax		# count++
+  0x0de:              | Loop7:	
+  0x0de: 506320000000 | 	mrmovl 32(%ebx), %esi	# valA = src[8]
+  0x0e4: 40711c000000 | 	rmmovl %edi, 28(%ecx)	# dst[7] = valB
+  0x0ea: 6277         | 	andl %edi, %edi		# valB <= 0?
+  0x0ec: 71f7000000   | 	jle Loop8		# if so, goto next loop
+  0x0f1: c0f001000000 | 	iaddl $1, %eax		# count++
+  0x0f7:              | Loop8:
+  0x0f7: 507324000000 | 	mrmovl 36(%ebx), %edi	# valB = src[9]
+  0x0fd: 406120000000 | 	rmmovl %esi, 32(%ecx)	# dst[8] = valA
+  0x103: 6266         | 	andl %esi, %esi		# valA <= 0?
+  0x105: 7110010000   | 	jle Loop9		# if so, goto next loop
+  0x10a: c0f001000000 | 	iaddl $1, %eax		# count++
+  0x110:              | Loop9:
+  0x110: 407124000000 | 	rmmovl %edi, 36(%ecx)	# dst[9] = valB
+  0x116: 6277         | 	andl %edi, %edi		# valB <= 0?
+  0x118: 7123010000   | 	jle LoopEnd		# if so, goto loop end
+  0x11d: c0f001000000 | 	iaddl $1, %eax
+  0x123:              | LoopEnd:
+  0x123: c0f128000000 | 	iaddl $40, %ecx		# dst += 10 * 4
+  0x129: c0f328000000 | 	iaddl $40, %ebx		# src += 10 * 4
+  0x12f: c0f2f6ffffff | 	iaddl $-10, %edx	# len -= 10
+  0x135: 7629000000   | 	jg Loop0		# if so, goto Loop0
+                      | 				# else, goto process remaining elements
+                      | 
+                      | # Bugen: Remaining part
+  0x13a:              | Remaining:
+  0x13a: c0f209000000 | 	iaddl $9, %edx		# restore real len
+  0x140: 7070010000   | 	jmp RemTest		# goto RemTest
+  0x145:              | RemLoop:
+  0x145: 506300000000 | 	mrmovl (%ebx), %esi	# valA = *src
+  0x14b: c0f2ffffffff | 	iaddl $-1, %edx		# len -= 1
+  0x151: c0f304000000 | 	iaddl $4, %ebx		# src += 1
+  0x157: 406100000000 | 	rmmovl %esi, (%ecx)	# *dst = valA
+  0x15d: c0f104000000 | 	iaddl $4, %ecx		# dst += 1
+  0x163: 6266         | 	andl %esi, %esi		# valA <= 0?
+  0x165: 7170010000   | 	jle RemTest		# if so, goto RemTest
+  0x16a: c0f001000000 | 	iaddl $1, %eax		# count++
+  0x170:              | RemTest:
+  0x170: 6222         | 	andl %edx, %edx		# len > 0?
+  0x172: 7645010000   | 	jg RemLoop		# if so, goto RemLoop
+                      | 
+                      | ##################################################################
+                      | # Do not modify the following section of code
+                      | # Function epilogue.
+  0x177:              | Done:
+  0x177: b07f         | 	popl %edi               # Restore callee-save registers
+  0x179: b03f         | 	popl %ebx
+  0x17b: b06f         | 	popl %esi
+  0x17d: 2054         | 	rrmovl %ebp, %esp
+  0x17f: b05f         | 	popl %ebp
+  0x181: 90           | 	ret
+                      | ##################################################################
+                      | # Keep the following label at the end of your function
+  0x182:              | End:
+                      | #/* $end ncopy-ys */
