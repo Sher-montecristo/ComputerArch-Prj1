@@ -26,22 +26,97 @@ ncopy:	pushl %ebp		# Save old frame pointer
 
 ##################################################################
 # You can modify this portion
-	# Loop header
-	xorl %eax,%eax		# count = 0;
-	andl %edx,%edx		# len <= 0?
-	jle Done		# if so, goto Done:
 
-Loop:	mrmovl (%ebx), %esi	# read val from src...
-	iaddl $-1, %edx		# len--
-	iaddl $4, %ebx		# src++
-	andl %esi, %esi		# val <= 0?
-	rmmovl %esi, (%ecx)	# ...and store it to dst
-	jle Npos		# if so, goto Npos:
+# Bugen: Entry
+	xorl %eax,%eax		# count = 0
+	iaddl $-9, %edx		# len -= 9, i.e., initial_len <= 9?
+	jle Remaining		# if so, goto Remaining
+
+# Bugen: Loop unrolling part
+Loop0:	
+	mrmovl (%ebx), %esi	# valA = src[0]
+	mrmovl 4(%ebx), %edi	# valB = src[1]
+	rmmovl %esi, (%ecx)	# dst[0] = valA
+	andl %esi, %esi		# valA <= 0?
+	jle Loop1		# if so, goto next loop
 	iaddl $1, %eax		# count++
-Npos:
-	iaddl $4, %ecx		# dst++
-	andl %edx,%edx		# len > 0?
-	jg Loop			# if so, goto Loop:
+Loop1:	
+	mrmovl 8(%ebx), %esi	# valA = src[2]
+	rmmovl %edi, 4(%ecx)	# dst[1] = valB
+	andl %edi, %edi		# valB <= 0?
+	jle Loop2		# if so, goto next loop
+	iaddl $1, %eax		# count++
+Loop2:
+	mrmovl 12(%ebx), %edi	# valB = src[3]
+	rmmovl %esi, 8(%ecx)	# dst[2] = valA
+	andl %esi, %esi		# valA <= 0?
+	jle Loop3		# if so, goto next loop
+	iaddl $1, %eax		# count++
+Loop3:	
+	mrmovl 16(%ebx), %esi	# valA = src[4]
+	rmmovl %edi, 12(%ecx)	# dst[3] = valB
+	andl %edi, %edi		# valB <= 0?
+	jle Loop4		# if so, goto next loop
+	iaddl $1, %eax		# count++
+Loop4:
+	mrmovl 20(%ebx), %edi	# valB = src[5]
+	rmmovl %esi, 16(%ecx)	# dst[4] = valA
+	andl %esi, %esi		# valA <= 0?
+	jle Loop5		# if so, goto next loop
+	iaddl $1, %eax		# count++
+Loop5:	
+	mrmovl 24(%ebx), %esi	# valA = src[6]
+	rmmovl %edi, 20(%ecx)	# dst[5] = valB
+	andl %edi, %edi		# valB <= 0?
+	jle Loop6		# if so, goto next loop
+	iaddl $1, %eax		# count++
+Loop6:
+	mrmovl 28(%ebx), %edi	# valB = src[7]
+	rmmovl %esi, 24(%ecx)	# dst[6] = valA
+	andl %esi, %esi		# valA <= 0?
+	jle Loop7		# if so, goto next loop
+	iaddl $1, %eax		# count++
+Loop7:	
+	mrmovl 32(%ebx), %esi	# valA = src[8]
+	rmmovl %edi, 28(%ecx)	# dst[7] = valB
+	andl %edi, %edi		# valB <= 0?
+	jle Loop8		# if so, goto next loop
+	iaddl $1, %eax		# count++
+Loop8:
+	mrmovl 36(%ebx), %edi	# valB = src[9]
+	rmmovl %esi, 32(%ecx)	# dst[8] = valA
+	andl %esi, %esi		# valA <= 0?
+	jle Loop9		# if so, goto next loop
+	iaddl $1, %eax		# count++
+Loop9:
+	rmmovl %edi, 36(%ecx)	# dst[9] = valB
+	andl %edi, %edi		# valB <= 0?
+	jle LoopEnd		# if so, goto loop end
+	iaddl $1, %eax
+LoopEnd:
+	iaddl $40, %ecx		# dst += 10 * 4
+	iaddl $40, %ebx		# src += 10 * 4
+	iaddl $-10, %edx	# len -= 10
+	jg Loop0		# if so, goto Loop0
+				# else, goto process remaining elements
+
+# Bugen: Remaining part
+Remaining:
+	iaddl $9, %edx		# restore real len
+	jmp RemTest		# goto RemTest
+RemLoop:
+	mrmovl (%ebx), %esi	# valA = *src
+	iaddl $-1, %edx		# len -= 1
+	iaddl $4, %ebx		# src += 1
+	rmmovl %esi, (%ecx)	# *dst = valA
+	iaddl $4, %ecx		# dst += 1
+	andl %esi, %esi		# valA <= 0?
+	jle RemTest		# if so, goto RemTest
+	iaddl $1, %eax		# count++
+RemTest:
+	andl %edx, %edx		# len > 0?
+	jg RemLoop		# if so, goto RemLoop
+
 ##################################################################
 # Do not modify the following section of code
 # Function epilogue.
