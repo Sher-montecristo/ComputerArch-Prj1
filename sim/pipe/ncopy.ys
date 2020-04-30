@@ -1,10 +1,15 @@
 #/* $begin ncopy-ys */
+
+# Bugen's note: to evalute this program, run:
+#  > ./correctness.pl -p
+#  > ./benchmark.pl
+
 ##################################################################
 # ncopy.ys - Copy a src block of len ints to dst.
 # Return the number of positive ints (>0) contained in src.
 #
 # Include your name and ID here.
-#
+# 518030910211, ZiqiZhao
 # Describe how and why you modified the baseline code.
 #
 ##################################################################
@@ -27,16 +32,14 @@ ncopy:	pushl %ebp		# Save old frame pointer
 	jle Done		# if so, goto Done:
 
 Loop:	mrmovl (%ebx), %esi	# read val from src...
-	rmmovl %esi, (%ecx)	# ...and store it to dst
+	iaddl $-1, %edx		# len--
+	iaddl $4, %ebx		# src++
 	andl %esi, %esi		# val <= 0?
+	rmmovl %esi, (%ecx)	# ...and store it to dst
 	jle Npos		# if so, goto Npos:
-	irmovl $1, %edi
-	addl %edi, %eax		# count++
-Npos:	irmovl $1, %edi
-	subl %edi, %edx		# len--
-	irmovl $4, %edi
-	addl %edi, %ebx		# src++
-	addl %edi, %ecx		# dst++
+	iaddl $1, %eax		# count++
+Npos:
+	iaddl $4, %ecx		# dst++
 	andl %edx,%edx		# len > 0?
 	jg Loop			# if so, goto Loop:
 ##################################################################
