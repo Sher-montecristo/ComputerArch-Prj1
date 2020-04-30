@@ -1,3 +1,10 @@
+# 518030910211 ZiqiZhao
+
+# Added instruction `iaddl`
+# The same changes as in `seq-full.hcl`
+# No pipeline control signal modified
+
+
 #/* $begin pipe-all-hcl */
 ####################################################################
 #    HCL Description of Control for Pipelined Y86 Processor        #
