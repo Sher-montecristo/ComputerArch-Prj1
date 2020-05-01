@@ -2,19 +2,14 @@
 
 # Added instruction `iaddl`
 # The same changes as in `seq-full.hcl`
-# No pipeline control signal modified
 
 
-#/* $begin pipe-all-hcl */
+#/* $begin pipe-bugen-hcl */
 ####################################################################
 #    HCL Description of Control for Pipelined Y86 Processor        #
 #    Copyright (C) Randal E. Bryant, David R. O'Hallaron, 2010     #
 ####################################################################
 
-## Your task is to implement the iaddl and leave instructions
-## The file contains a declaration of the icodes
-## for iaddl (IIADDL) and leave (ILEAVE).
-## Your job is to add the rest of the logic to make it work
 
 ####################################################################
 #    C Include's.  Don't alter these                               #
@@ -137,6 +132,15 @@ intsig W_valE  'mem_wb_curr->vale'      # ALU E value
 intsig W_dstM 'mem_wb_curr->destm'	# Destination M register ID
 intsig W_valM  'mem_wb_curr->valm'	# Memory M value
 
+##### Our changes ##################################################
+intsig D_ifun 'if_id_curr->ifun'	# Instruction function of D
+intsig M_ifun 'ex_mem_curr->ifun'	# Instruction function of M
+intsig W_ifun 'mem_wb_curr->ifun'	# Instruction function of W
+intsig ALUAND 'A_AND'			# ALU should AND
+
+intsig UNCOND 'C_YES'			# Unconditional transfer
+
+
 ####################################################################
 #    Control Signal Definitions.                                   #
 ####################################################################
@@ -145,10 +149,18 @@ intsig W_valM  'mem_wb_curr->valm'	# Memory M value
 
 ## What address should instruction be fetched at
 int f_pc = [
-	# Mispredicted branch.  Fetch at incremented PC
-	M_icode == IJXX && !M_Cnd : M_valA;
+	# Unconditional jump: Use predicted value of PC
+	M_icode == IJXX && M_ifun == UNCOND : F_predPC;
+
+	# Mispredicted taken. Fetch at incremented PC (previously valP)
+	M_icode == IJXX && W_icode == IOPL && W_ifun == ALUAND && W_valE < 0 && !M_Cnd : M_valA;
+
+	# Mispredicted not taken. Fetch at previous target (valC)
+	M_icode == IJXX && M_Cnd : M_valE;
+
 	# Completion of RET instruction.
 	W_icode == IRET : W_valM;
+
 	# Default: Use predicted value of PC
 	1 : F_predPC;
 ];
@@ -189,7 +201,12 @@ bool need_valC =
 
 # Predict next value of PC
 int f_predPC = [
-	f_icode in { IJXX, ICALL } : f_valC;
+	# Unconditional
+	f_icode == ICALL : f_valC;
+	f_icode == IJXX && f_ifun == UNCOND : f_valC;
+	# Taken if (x & y) <= 0
+	f_icode == IJXX && D_icode == IOPL && D_ifun == ALUAND && d_rvalA < 0 && d_rvalB < 0 : f_valC;
+	# Not taken
 	1 : f_valP;
 ];
 
@@ -252,6 +269,7 @@ int aluA = [
 	E_icode in { IIRMOVL, IRMMOVL, IMRMOVL, IIADDL } : E_valC;
 	E_icode in { ICALL, IPUSHL } : -4;
 	E_icode in { IRET, IPOPL } : 4;
+	E_icode == IJXX : E_valC;
 	# Other instructions don't need ALU
 ];
 
@@ -260,6 +278,7 @@ int aluB = [
 	E_icode in { IRMMOVL, IMRMOVL, IOPL, ICALL, 
 		     IPUSHL, IRET, IPOPL, IIADDL } : E_valB;
 	E_icode in { IRRMOVL, IIRMOVL } : 0;
+	E_icode == IJXX : 0;
 	# Other instructions don't need ALU
 ];
 
@@ -344,8 +363,10 @@ bool D_stall =
 	 E_dstM in { d_srcA, d_srcB };
 
 bool D_bubble =
-	# Mispredicted branch
-	(E_icode == IJXX && !e_Cnd) ||
+	# Mispredicted branch taken
+	(E_icode == IJXX && E_ifun != UNCOND && M_icode == IOPL && M_ifun == ALUAND && M_valE < 0 && !e_Cnd) ||
+	# Mispredicted branch not taken
+	(E_icode == IJXX && E_ifun != UNCOND && e_Cnd) ||
 	# Stalling at fetch while ret passes through pipeline
 	# but not condition for a load/use hazard
 	!(E_icode in { IMRMOVL, IPOPL } && E_dstM in { d_srcA, d_srcB }) &&
@@ -355,8 +376,10 @@ bool D_bubble =
 # At most one of these can be true.
 bool E_stall = 0;
 bool E_bubble =
-	# Mispredicted branch
-	(E_icode == IJXX && !e_Cnd) ||
+	# Mispredicted branch taken
+	(E_icode == IJXX && E_ifun != UNCOND && M_icode == IOPL && M_ifun == ALUAND && M_valE < 0 && !e_Cnd) ||
+	# Mispredicted branch not taken
+	(E_icode == IJXX && E_ifun != UNCOND && e_Cnd) ||
 	# Conditions for a load/use hazard
 	E_icode in { IMRMOVL, IPOPL } &&
 	 E_dstM in { d_srcA, d_srcB};
