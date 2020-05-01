@@ -1,4 +1,4 @@
-char simname[] = "Y86 Processor: pipe-bugen.hcl";
+char simname[] = "Y86 Processor: pipe-bugencc.hcl";
 #include <stdio.h>
 #include "isa.h"
 #include "pipeline.h"
@@ -9,13 +9,11 @@ int main(int argc, char *argv[]){return sim_main(argc,argv);}
 int gen_f_pc()
 {
     return ((((ex_mem_curr->icode) == (I_JMP)) & ((ex_mem_curr->ifun) == 
-          (C_YES))) ? (pc_curr->pc) : ((((((ex_mem_curr->icode) == (I_JMP))
-               & ((mem_wb_curr->icode) == (I_ALU))) & ((mem_wb_curr->ifun)
-               == (A_AND))) & ((mem_wb_curr->vale) >= 0)) & 
-        (ex_mem_curr->takebranch)) ? (ex_mem_curr->vale) : ((
-          (ex_mem_curr->icode) == (I_JMP)) & !(ex_mem_curr->takebranch)) ? 
-      (ex_mem_curr->vala) : ((mem_wb_curr->icode) == (I_RET)) ? 
-      (mem_wb_curr->valm) : (pc_curr->pc));
+          (C_YES))) ? (pc_curr->pc) : ((((ex_mem_curr->icode) == (I_JMP))
+           & ((mem_wb_curr->icode) == (I_ALU) || (mem_wb_curr->icode) == 
+            (I_IADDL))) & !(ex_mem_curr->takebranch)) ? (ex_mem_curr->vala)
+       : ((mem_wb_curr->icode) == (I_RET)) ? (mem_wb_curr->valm) : 
+      (pc_curr->pc));
 }
 
 int gen_f_icode()
@@ -67,9 +65,50 @@ int gen_f_predPC()
 {
     return (((if_id_next->icode) == (I_CALL)) ? (if_id_next->valc) : ((
           (if_id_next->icode) == (I_JMP)) & ((if_id_next->ifun) == (C_YES))
-        ) ? (if_id_next->valc) : (((((if_id_next->icode) == (I_JMP)) & (
-              (if_id_curr->icode) == (I_ALU))) & ((if_id_curr->ifun) == 
-            (A_AND))) & (((d_regvala) >= 0) | ((d_regvalb) >= 0))) ? 
+        ) ? (if_id_next->valc) : (((if_id_next->icode) == (I_JMP)) & (
+          (if_id_curr->icode) == (I_ALU) || (if_id_curr->icode) == 
+          (I_IADDL))) ? (if_id_next->valc) : (((((if_id_next->icode) == 
+              (I_JMP)) & ((id_ex_curr->icode) == (I_ALU) || 
+              (id_ex_curr->icode) == (I_IADDL))) & ((if_id_next->ifun) == 
+            (C_LE))) & ((ex_mem_next->vale) > 0)) ? (if_id_next->valp) : (((
+            ((if_id_next->icode) == (I_JMP)) & ((id_ex_curr->icode) == 
+              (I_ALU) || (id_ex_curr->icode) == (I_IADDL))) & (
+            (if_id_next->ifun) == (C_L))) & ((ex_mem_next->vale) >= 0)) ? 
+      (if_id_next->valp) : (((((if_id_next->icode) == (I_JMP)) & (
+              (id_ex_curr->icode) == (I_ALU) || (id_ex_curr->icode) == 
+              (I_IADDL))) & ((if_id_next->ifun) == (C_E))) & (
+          (ex_mem_next->vale) != 0)) ? (if_id_next->valp) : ((((
+              (if_id_next->icode) == (I_JMP)) & ((id_ex_curr->icode) == 
+              (I_ALU) || (id_ex_curr->icode) == (I_IADDL))) & (
+            (if_id_next->ifun) == (C_NE))) & ((ex_mem_next->vale) == 0)) ? 
+      (if_id_next->valp) : (((((if_id_next->icode) == (I_JMP)) & (
+              (id_ex_curr->icode) == (I_ALU) || (id_ex_curr->icode) == 
+              (I_IADDL))) & ((if_id_next->ifun) == (C_GE))) & (
+          (ex_mem_next->vale) < 0)) ? (if_id_next->valp) : ((((
+              (if_id_next->icode) == (I_JMP)) & ((id_ex_curr->icode) == 
+              (I_ALU) || (id_ex_curr->icode) == (I_IADDL))) & (
+            (if_id_next->ifun) == (C_G))) & ((ex_mem_next->vale) <= 0)) ? 
+      (if_id_next->valp) : (((((if_id_next->icode) == (I_JMP)) & !(
+              (id_ex_curr->icode) == (I_ALU) || (id_ex_curr->icode) == 
+              (I_IADDL))) & ((if_id_next->ifun) == (C_LE))) & !((cc) == 1
+           || (cc) == 2 || (cc) == 4 || (cc) == 5)) ? (if_id_next->valp) : (((
+            ((if_id_next->icode) == (I_JMP)) & !((id_ex_curr->icode) == 
+              (I_ALU) || (id_ex_curr->icode) == (I_IADDL))) & (
+            (if_id_next->ifun) == (C_L))) & !((cc) == 1 || (cc) == 2 || (cc)
+           == 5)) ? (if_id_next->valp) : (((((if_id_next->icode) == (I_JMP))
+             & !((id_ex_curr->icode) == (I_ALU) || (id_ex_curr->icode) == 
+              (I_IADDL))) & ((if_id_next->ifun) == (C_E))) & !((cc) == 4 || 
+          (cc) == 5)) ? (if_id_next->valp) : (((((if_id_next->icode) == 
+              (I_JMP)) & !((id_ex_curr->icode) == (I_ALU) || 
+              (id_ex_curr->icode) == (I_IADDL))) & ((if_id_next->ifun) == 
+            (C_NE))) & !((cc) == 0 || (cc) == 1 || (cc) == 2 || (cc) == 3)) ? 
+      (if_id_next->valp) : (((((if_id_next->icode) == (I_JMP)) & !(
+              (id_ex_curr->icode) == (I_ALU) || (id_ex_curr->icode) == 
+              (I_IADDL))) & ((if_id_next->ifun) == (C_GE))) & !((cc) == 0
+           || (cc) == 3 || (cc) == 4)) ? (if_id_next->valp) : ((((
+              (if_id_next->icode) == (I_JMP)) & !((id_ex_curr->icode) == 
+              (I_ALU) || (id_ex_curr->icode) == (I_IADDL))) & (
+            (if_id_next->ifun) == (C_G))) & !((cc) == 0 || (cc) == 3)) ? 
       (if_id_next->valp) : ((if_id_next->icode) == (I_JMP)) ? 
       (if_id_next->valc) : (if_id_next->valp));
 }
@@ -139,8 +178,7 @@ int gen_aluA()
         (I_MRMOVL) || (id_ex_curr->icode) == (I_IADDL)) ? 
       (id_ex_curr->valc) : ((id_ex_curr->icode) == (I_CALL) || 
         (id_ex_curr->icode) == (I_PUSHL)) ? -4 : ((id_ex_curr->icode) == 
-        (I_RET) || (id_ex_curr->icode) == (I_POPL)) ? 4 : (
-        (id_ex_curr->icode) == (I_JMP)) ? (id_ex_curr->valc) : 0);
+        (I_RET) || (id_ex_curr->icode) == (I_POPL)) ? 4 : 0);
 }
 
 int gen_aluB()
@@ -151,7 +189,7 @@ int gen_aluB()
         (id_ex_curr->icode) == (I_RET) || (id_ex_curr->icode) == (I_POPL)
          || (id_ex_curr->icode) == (I_IADDL)) ? (id_ex_curr->valb) : (
         (id_ex_curr->icode) == (I_RRMOVL) || (id_ex_curr->icode) == 
-        (I_IRMOVL)) ? 0 : ((id_ex_curr->icode) == (I_JMP)) ? 0 : 0);
+        (I_IRMOVL)) ? 0 : 0);
 }
 
 int gen_alufun()
@@ -256,17 +294,14 @@ int gen_D_stall()
 
 int gen_D_bubble()
 {
-    return (((((((((id_ex_curr->icode) == (I_JMP)) & ((id_ex_curr->ifun)
-                     != (C_YES))) & ((ex_mem_curr->icode) == (I_ALU))) & (
-                (ex_mem_curr->ifun) == (A_AND))) & ((ex_mem_curr->vale) >= 0
-              )) & (ex_mem_next->takebranch)) | ((((id_ex_curr->icode) == 
-              (I_JMP)) & ((id_ex_curr->ifun) != (C_YES))) & !
-          (ex_mem_next->takebranch))) | (!(((id_ex_curr->icode) == 
-            (I_MRMOVL) || (id_ex_curr->icode) == (I_POPL)) & (
-            (id_ex_curr->destm) == (id_ex_next->srca) || 
-            (id_ex_curr->destm) == (id_ex_next->srcb))) & ((I_RET) == 
-          (if_id_curr->icode) || (I_RET) == (id_ex_curr->icode) || (I_RET)
-           == (ex_mem_curr->icode))));
+    return ((((((id_ex_curr->icode) == (I_JMP)) & ((id_ex_curr->ifun) != 
+              (C_YES))) & ((ex_mem_curr->icode) == (I_ALU) || 
+            (ex_mem_curr->icode) == (I_IADDL))) & !
+        (ex_mem_next->takebranch)) | (!(((id_ex_curr->icode) == (I_MRMOVL)
+             || (id_ex_curr->icode) == (I_POPL)) & ((id_ex_curr->destm) == 
+            (id_ex_next->srca) || (id_ex_curr->destm) == (id_ex_next->srcb)
+            )) & ((I_RET) == (if_id_curr->icode) || (I_RET) == 
+          (id_ex_curr->icode) || (I_RET) == (ex_mem_curr->icode))));
 }
 
 int gen_E_stall()
@@ -276,12 +311,10 @@ int gen_E_stall()
 
 int gen_E_bubble()
 {
-    return (((((((((id_ex_curr->icode) == (I_JMP)) & ((id_ex_curr->ifun)
-                     != (C_YES))) & ((ex_mem_curr->icode) == (I_ALU))) & (
-                (ex_mem_curr->ifun) == (A_AND))) & ((ex_mem_curr->vale) >= 0
-              )) & (ex_mem_next->takebranch)) | ((((id_ex_curr->icode) == 
-              (I_JMP)) & ((id_ex_curr->ifun) != (C_YES))) & !
-          (ex_mem_next->takebranch))) | (((id_ex_curr->icode) == (I_MRMOVL)
+    return ((((((id_ex_curr->icode) == (I_JMP)) & ((id_ex_curr->ifun) != 
+              (C_YES))) & ((ex_mem_curr->icode) == (I_ALU) || 
+            (ex_mem_curr->icode) == (I_IADDL))) & !
+        (ex_mem_next->takebranch)) | (((id_ex_curr->icode) == (I_MRMOVL)
            || (id_ex_curr->icode) == (I_POPL)) & ((id_ex_curr->destm) == 
           (id_ex_next->srca) || (id_ex_curr->destm) == (id_ex_next->srcb)))
       );

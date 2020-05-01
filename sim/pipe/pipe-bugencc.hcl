@@ -133,11 +133,6 @@ intsig W_dstM 'mem_wb_curr->destm'	# Destination M register ID
 intsig W_valM  'mem_wb_curr->valm'	# Memory M value
 
 ##### Our changes ##################################################
-intsig D_ifun 'if_id_curr->ifun'	# Instruction function of D
-intsig M_ifun 'ex_mem_curr->ifun'	# Instruction function of M
-intsig W_ifun 'mem_wb_curr->ifun'	# Instruction function of W
-intsig ALUAND 'A_AND'			# ALU should AND
-
 intsig UNCOND 'C_YES'			# Unconditional transfer
 intsig CLE    'C_LE'
 intsig CL     'C_L'
@@ -146,7 +141,8 @@ intsig CNE    'C_NE'
 intsig CGE    'C_GE'
 intsig CG     'C_G'
 
-intsig CC     'cc'
+intsig cc     'cc'
+intsig ccin   'cc_in'
 
 
 ####################################################################
@@ -157,10 +153,15 @@ intsig CC     'cc'
 
 ## What address should instruction be fetched at
 int f_pc = [
-	# Mispredicted branch.  Fetch at incremented PC
-	M_icode == IJXX && !M_Cnd : M_valA;
+	# Unconditional jump: Use predicted value of PC
+	M_icode == IJXX && M_ifun == UNCOND : F_predPC;
+
+	# Mispredicted taken. Fetch at incremented PC (previously valP)
+	M_icode == IJXX && (W_icode in {IOPL, IIADDL}) && !M_Cnd : M_valA;
+
 	# Completion of RET instruction.
 	W_icode == IRET : W_valM;
+
 	# Default: Use predicted value of PC
 	1 : F_predPC;
 ];
@@ -201,7 +202,33 @@ bool need_valC =
 
 # Predict next value of PC
 int f_predPC = [
-	f_icode in { IJXX, ICALL } : f_valC;
+	f_icode == ICALL : f_valC;
+	f_icode == IJXX && f_ifun == UNCOND : f_valC;
+
+	# Decode stage is ALU and will set CC -> always taken by default
+	f_icode == IJXX && (D_icode in {IOPL, IIADDL}): f_valC;
+
+	# Decode stage is not ALU
+	# Execute stage is ALU -> check e_valE
+	f_icode == IJXX && (E_icode in {IOPL, IIADDL}) && f_ifun == CLE && e_valE >  0 : f_valP;
+	f_icode == IJXX && (E_icode in {IOPL, IIADDL}) && f_ifun == CL  && e_valE >= 0 : f_valP;
+	f_icode == IJXX && (E_icode in {IOPL, IIADDL}) && f_ifun == CE  && e_valE != 0 : f_valP;
+	f_icode == IJXX && (E_icode in {IOPL, IIADDL}) && f_ifun == CNE && e_valE == 0 : f_valP;
+	f_icode == IJXX && (E_icode in {IOPL, IIADDL}) && f_ifun == CGE && e_valE <  0 : f_valP;
+	f_icode == IJXX && (E_icode in {IOPL, IIADDL}) && f_ifun == CG  && e_valE <= 0 : f_valP;
+
+	# Execute stage is not ALU -> check cc -> ZF SF OF
+	f_icode == IJXX && !(E_icode in {IOPL, IIADDL}) && f_ifun == CLE && !(cc in {1,2,4,5}) : f_valP;
+	f_icode == IJXX && !(E_icode in {IOPL, IIADDL}) && f_ifun == CL  && !(cc in {1,2,5}) : f_valP;
+	f_icode == IJXX && !(E_icode in {IOPL, IIADDL}) && f_ifun == CE  && !(cc in {4,5}) : f_valP;
+	f_icode == IJXX && !(E_icode in {IOPL, IIADDL}) && f_ifun == CNE && !(cc in {0,1,2,3}) : f_valP;
+	f_icode == IJXX && !(E_icode in {IOPL, IIADDL}) && f_ifun == CGE && !(cc in {0,3,4}) : f_valP;
+	f_icode == IJXX && !(E_icode in {IOPL, IIADDL}) && f_ifun == CG  && !(cc in {0,3}) : f_valP;
+
+	# Other JXX
+	f_icode == IJXX : f_valC;
+
+	# Otherwise
 	1 : f_valP;
 ];
 
@@ -356,8 +383,8 @@ bool D_stall =
 	 E_dstM in { d_srcA, d_srcB };
 
 bool D_bubble =
-	# Mispredicted branch
-	(E_icode == IJXX && !e_Cnd) ||
+	# Mispredicted branch taken
+	(E_icode == IJXX && E_ifun != UNCOND && (M_icode in {IOPL, IIADDL}) && !e_Cnd) ||
 	# Stalling at fetch while ret passes through pipeline
 	# but not condition for a load/use hazard
 	!(E_icode in { IMRMOVL, IPOPL } && E_dstM in { d_srcA, d_srcB }) &&
@@ -367,8 +394,8 @@ bool D_bubble =
 # At most one of these can be true.
 bool E_stall = 0;
 bool E_bubble =
-	# Mispredicted branch
-	(E_icode == IJXX && !e_Cnd) ||
+	# Mispredicted branch taken
+	(E_icode == IJXX && E_ifun != UNCOND && (M_icode in {IOPL, IIADDL}) && !e_Cnd) ||
 	# Conditions for a load/use hazard
 	E_icode in { IMRMOVL, IPOPL } &&
 	 E_dstM in { d_srcA, d_srcB};

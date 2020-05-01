@@ -1,6 +1,6 @@
 # Modify this line to indicate the default version to build
 
-VERSION=bugen
+VERSION=bugencc
 
 # Comment this out if you don't have Tcl/Tk on your system
 
@@ -36,6 +36,11 @@ LIBS=$(TKLIBS) -lm
 YAS = ../misc/yas
 
 all: psim drivers
+
+testpsim:
+	make -C ../ptest SIM=../pipe/psim TFLAGS=-i
+	make -C ../y86-code testpsim
+	./correctness.pl -p
 
 # This rule builds the PIPE simulator
 psim: psim.c sim.h pipe-$(VERSION).hcl $(MISCDIR)/isa.c $(MISCDIR)/isa.h
