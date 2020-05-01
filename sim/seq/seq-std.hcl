@@ -87,8 +87,8 @@ boolsig dmem_error 'dmem_error'		# Error signal from data memory
 
 # Determine instruction code
 int icode = [
-	imem_error: INOP;
-	1: imem_icode;		# Default: get from instruction memory
+	imem_error: INOP; #如果取指錯誤那麼就nop
+	1: imem_icode;		# Default: get from instruction memory # icode field from instruction memory
 ];
 
 # Determine instruction function
