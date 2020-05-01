@@ -11,10 +11,10 @@ int gen_f_pc()
     return ((((ex_mem_curr->icode) == (I_JMP)) & ((ex_mem_curr->ifun) == 
           (C_YES))) ? (pc_curr->pc) : ((((((ex_mem_curr->icode) == (I_JMP))
                & ((mem_wb_curr->icode) == (I_ALU))) & ((mem_wb_curr->ifun)
-               == (A_AND))) & ((mem_wb_curr->vale) < 0)) & !
-        (ex_mem_curr->takebranch)) ? (ex_mem_curr->vala) : ((
-          (ex_mem_curr->icode) == (I_JMP)) & (ex_mem_curr->takebranch)) ? 
-      (ex_mem_curr->vale) : ((mem_wb_curr->icode) == (I_RET)) ? 
+               == (A_AND))) & ((mem_wb_curr->vale) >= 0)) & 
+        (ex_mem_curr->takebranch)) ? (ex_mem_curr->vale) : ((
+          (ex_mem_curr->icode) == (I_JMP)) & !(ex_mem_curr->takebranch)) ? 
+      (ex_mem_curr->vala) : ((mem_wb_curr->icode) == (I_RET)) ? 
       (mem_wb_curr->valm) : (pc_curr->pc));
 }
 
@@ -67,9 +67,10 @@ int gen_f_predPC()
 {
     return (((if_id_next->icode) == (I_CALL)) ? (if_id_next->valc) : ((
           (if_id_next->icode) == (I_JMP)) & ((if_id_next->ifun) == (C_YES))
-        ) ? (if_id_next->valc) : ((((((if_id_next->icode) == (I_JMP)) & (
-                (if_id_curr->icode) == (I_ALU))) & ((if_id_curr->ifun) == 
-              (A_AND))) & ((d_regvala) < 0)) & ((d_regvalb) < 0)) ? 
+        ) ? (if_id_next->valc) : (((((if_id_next->icode) == (I_JMP)) & (
+              (if_id_curr->icode) == (I_ALU))) & ((if_id_curr->ifun) == 
+            (A_AND))) & (((d_regvala) >= 0) | ((d_regvalb) >= 0))) ? 
+      (if_id_next->valp) : ((if_id_next->icode) == (I_JMP)) ? 
       (if_id_next->valc) : (if_id_next->valp));
 }
 
@@ -257,9 +258,9 @@ int gen_D_bubble()
 {
     return (((((((((id_ex_curr->icode) == (I_JMP)) & ((id_ex_curr->ifun)
                      != (C_YES))) & ((ex_mem_curr->icode) == (I_ALU))) & (
-                (ex_mem_curr->ifun) == (A_AND))) & ((ex_mem_curr->vale) < 0)
-            ) & !(ex_mem_next->takebranch)) | ((((id_ex_curr->icode) == 
-              (I_JMP)) & ((id_ex_curr->ifun) != (C_YES))) & 
+                (ex_mem_curr->ifun) == (A_AND))) & ((ex_mem_curr->vale) >= 0
+              )) & (ex_mem_next->takebranch)) | ((((id_ex_curr->icode) == 
+              (I_JMP)) & ((id_ex_curr->ifun) != (C_YES))) & !
           (ex_mem_next->takebranch))) | (!(((id_ex_curr->icode) == 
             (I_MRMOVL) || (id_ex_curr->icode) == (I_POPL)) & (
             (id_ex_curr->destm) == (id_ex_next->srca) || 
@@ -277,9 +278,9 @@ int gen_E_bubble()
 {
     return (((((((((id_ex_curr->icode) == (I_JMP)) & ((id_ex_curr->ifun)
                      != (C_YES))) & ((ex_mem_curr->icode) == (I_ALU))) & (
-                (ex_mem_curr->ifun) == (A_AND))) & ((ex_mem_curr->vale) < 0)
-            ) & !(ex_mem_next->takebranch)) | ((((id_ex_curr->icode) == 
-              (I_JMP)) & ((id_ex_curr->ifun) != (C_YES))) & 
+                (ex_mem_curr->ifun) == (A_AND))) & ((ex_mem_curr->vale) >= 0
+              )) & (ex_mem_next->takebranch)) | ((((id_ex_curr->icode) == 
+              (I_JMP)) & ((id_ex_curr->ifun) != (C_YES))) & !
           (ex_mem_next->takebranch))) | (((id_ex_curr->icode) == (I_MRMOVL)
            || (id_ex_curr->icode) == (I_POPL)) & ((id_ex_curr->destm) == 
           (id_ex_next->srca) || (id_ex_curr->destm) == (id_ex_next->srcb)))

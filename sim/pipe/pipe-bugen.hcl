@@ -152,11 +152,11 @@ int f_pc = [
 	# Unconditional jump: Use predicted value of PC
 	M_icode == IJXX && M_ifun == UNCOND : F_predPC;
 
-	# Mispredicted taken. Fetch at incremented PC (previously valP)
-	M_icode == IJXX && W_icode == IOPL && W_ifun == ALUAND && W_valE < 0 && !M_Cnd : M_valA;
-
 	# Mispredicted not taken. Fetch at previous target (valC)
-	M_icode == IJXX && M_Cnd : M_valE;
+	M_icode == IJXX && W_icode == IOPL && W_ifun == ALUAND && W_valE >= 0 && M_Cnd : M_valE;
+
+	# Mispredicted taken. Fetch at incremented PC (previously valP)
+	M_icode == IJXX && !M_Cnd : M_valA;
 
 	# Completion of RET instruction.
 	W_icode == IRET : W_valM;
@@ -204,9 +204,11 @@ int f_predPC = [
 	# Unconditional
 	f_icode == ICALL : f_valC;
 	f_icode == IJXX && f_ifun == UNCOND : f_valC;
-	# Taken if (x & y) <= 0
-	f_icode == IJXX && D_icode == IOPL && D_ifun == ALUAND && d_rvalA < 0 && d_rvalB < 0 : f_valC;
-	# Not taken
+	# Not taken if x >= 0 or y >= 0
+	f_icode == IJXX && D_icode == IOPL && D_ifun == ALUAND && (d_rvalA >= 0 || d_rvalB >= 0) : f_valP;
+	# Taken
+	f_icode == IJXX : f_valC;
+	
 	1 : f_valP;
 ];
 
@@ -364,9 +366,9 @@ bool D_stall =
 
 bool D_bubble =
 	# Mispredicted branch taken
-	(E_icode == IJXX && E_ifun != UNCOND && M_icode == IOPL && M_ifun == ALUAND && M_valE < 0 && !e_Cnd) ||
+	(E_icode == IJXX && E_ifun != UNCOND && M_icode == IOPL && M_ifun == ALUAND && M_valE >= 0 && e_Cnd) ||
 	# Mispredicted branch not taken
-	(E_icode == IJXX && E_ifun != UNCOND && e_Cnd) ||
+	(E_icode == IJXX && E_ifun != UNCOND && !e_Cnd) ||
 	# Stalling at fetch while ret passes through pipeline
 	# but not condition for a load/use hazard
 	!(E_icode in { IMRMOVL, IPOPL } && E_dstM in { d_srcA, d_srcB }) &&
@@ -377,9 +379,9 @@ bool D_bubble =
 bool E_stall = 0;
 bool E_bubble =
 	# Mispredicted branch taken
-	(E_icode == IJXX && E_ifun != UNCOND && M_icode == IOPL && M_ifun == ALUAND && M_valE < 0 && !e_Cnd) ||
+	(E_icode == IJXX && E_ifun != UNCOND && M_icode == IOPL && M_ifun == ALUAND && M_valE >= 0 && e_Cnd) ||
 	# Mispredicted branch not taken
-	(E_icode == IJXX && E_ifun != UNCOND && e_Cnd) ||
+	(E_icode == IJXX && E_ifun != UNCOND && !e_Cnd) ||
 	# Conditions for a load/use hazard
 	E_icode in { IMRMOVL, IPOPL } &&
 	 E_dstM in { d_srcA, d_srcB};
