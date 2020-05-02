@@ -47,8 +47,8 @@ testpsim:
 psim: psim.c sim.h pipe-$(VERSION).hcl $(MISCDIR)/isa.c $(MISCDIR)/isa.h
 	# Building the pipe-$(VERSION).hcl version of PIPE
 ifneq ($(VERSION),zzcc)
-	@echo "\e[1;31mNOTE: We have made further optimazation on branch prediction to maximize the potential of the pipeline."
-	@echo "      To get the best performance, please make 'zzcc' version by 'make' or 'make VERSION=zzcc'.\e[0m"
+	@echo "\e[1;31mNOTE: We have made further optimization on branch prediction to maximize the potential of the pipeline."
+	@echo "      To obtain the best performance, please make 'zzcc' version by 'make' or 'make VERSION=zzcc'.\e[0m"
 else
 	@echo "\e[1;32mYEP!  You are making with the our optimized pipeline design!\e[0m"
 endif
