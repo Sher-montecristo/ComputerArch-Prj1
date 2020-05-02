@@ -74,15 +74,25 @@ The following is our roadmap:
 \section{Experiments}
 \subsection{Part A}
 \subsubsection{Analysis}
-In this part, we are asked to 
+In this part, we are asked to implement and simulate three y86 programs. 
+From a macro point of view，this part is relatively easy. 
+But there are plenty of optimizations worth exploring in terms of code readability and elegance.\\
+\textbf{Difficult Point} 
+\begin{itemize}
+        \item Be aware of the state of the stack like calling a function will push the ret address first.
+        \item Be careful to protect the callee-save register
+        \item Implement function recursion smartly
+\end{itemize}
 [In this part, you should give an overall analysis for the task, 
 like difficult point, core technique and so on.]
 
 \subsubsection{Code}
-
+\begin{center}
+        \textbf{sum.ys}
+\end{center}
 \begin{lstlisting}
-        # 518030910211 ZiqiZhao
-        # 518030910188 YiminZhao
+# 518030910211 ZiqiZhao
+# 518030910188 YiminZhao
 
 # Set up stack
         .pos    0
