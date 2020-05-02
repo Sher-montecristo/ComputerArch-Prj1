@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2019.10.29)  2 MAY 2020 14:14
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2019.10.29)  2 MAY 2020 14:44
 entering extended mode
 **latex-version
-(c:\Users\18123\Desktop\project1-handout\project1-handout\report-template\latex-version.tex
+(c:\Users\18123\VscodeProject\ComputerArch-Prj1\report\latex-version.tex
 LaTeX2e <2011/06/27>
 (C:\CTEX\MiKTeX\tex\latex\base\article.cls
 Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
@@ -122,33 +122,62 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 568.
 \mathdisplay@stack=\toks19
 LaTeX Info: Redefining \[ on input line 2666.
 LaTeX Info: Redefining \] on input line 2667.
-) (c:\Users\18123\Desktop\project1-handout\project1-handout\report-template\latex-version.aux)
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
+) (C:\CTEX\MiKTeX\tex\latex\listings\listings.sty
+\lst@mode=\count105
+\lst@gtempboxa=\box28
+\lst@token=\toks20
+\lst@length=\count106
+\lst@currlwidth=\dimen116
+\lst@column=\count107
+\lst@pos=\count108
+\lst@lostspace=\dimen117
+\lst@width=\dimen118
+\lst@newlines=\count109
+\lst@lineno=\count110
+\lst@maxwidth=\dimen119
+ (C:\CTEX\MiKTeX\tex\latex\listings\lstmisc.sty
+File: lstmisc.sty 2007/02/22 1.4 (Carsten Heinz)
+\c@lstnumber=\count111
+\lst@skipnumbers=\count112
+\lst@framebox=\box29
+) (C:\CTEX\MiKTeX\tex\latex\listings\listings.cfg
+File: listings.cfg 2007/02/22 1.4 listings configuration
+))
+Package: listings 2007/02/22 1.4 (Carsten Heinz)
+ (C:\CTEX\MiKTeX\tex\latex\listings\lstlang1.sty
+File: lstlang1.sty 2004/09/05 1.3 listings language file
+) (C:\CTEX\MiKTeX\tex\latex\listings\lstlang2.sty
+File: lstlang2.sty 2004/09/05 1.3 listings language file
+) (C:\CTEX\MiKTeX\tex\latex\listings\lstlang3.sty
+File: lstlang3.sty 2004/09/05 1.3 listings language file
+) (c:\Users\18123\VscodeProject\ComputerArch-Prj1\report\latex-version.aux)
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
  (C:\CTEX\MiKTeX\tex\context\base\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count105
-\scratchdimen=\dimen116
-\scratchbox=\box28
-\nofMPsegments=\count106
-\nofMParguments=\count107
-\everyMPshowfont=\toks20
-\MPscratchCnt=\count108
-\MPscratchDim=\dimen117
-\MPnumerator=\count109
-\makeMPintoPDFobject=\count110
-\everyMPtoPDFconversion=\toks21
+\scratchcounter=\count113
+\scratchdimen=\dimen120
+\scratchbox=\box30
+\nofMPsegments=\count114
+\nofMParguments=\count115
+\everyMPshowfont=\toks21
+\MPscratchCnt=\count116
+\MPscratchDim=\dimen121
+\MPnumerator=\count117
+\makeMPintoPDFobject=\count118
+\everyMPtoPDFconversion=\toks22
 )
+\c@lstlisting=\count119
 Missing character: There is no è in font cmr12!
 Missing character: There is no µ in font cmr12!
 Missing character: There is no µ in font cmr12!
@@ -170,38 +199,43 @@ Missing character: There is no ‘ in font cmr12!
 Missing character: There is no ï in font cmr10!
 Missing character: There is no ¼ in font cmr10!
 Missing character: There is no Œ in font cmr10!
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 41.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 54.
  (C:\CTEX\MiKTeX\tex\latex\base\omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 41.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 54.
  [1
 
 {C:/CTEX/UserData/pdftex/config/pdftex.map{Unicode.sfd}{UGBK.sfd}}]
+Overfull \hbox (15.00366pt too wide) in paragraph at lines 95--96
+[][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+[2]
 Missing character: There is no â in font cmr10!
 Missing character: There is no € in font cmr10!
 Missing character: There is no ™ in font cmr10!
 Missing character: There is no â in font cmr10!
 Missing character: There is no € in font cmr10!
 Missing character: There is no ™ in font cmr10!
- [2]
+ [3]
 Missing character: There is no â in font cmr10!
 Missing character: There is no € in font cmr10!
 Missing character: There is no ™ in font cmr10!
- [3] (c:\Users\18123\Desktop\project1-handout\project1-handout\report-template\latex-version.aux) ) 
+ [4] (c:\Users\18123\VscodeProject\ComputerArch-Prj1\report\latex-version.aux) ) 
 Here is how much of TeX's memory you used:
- 2230 strings out of 495291
- 27538 string characters out of 3182829
- 85262 words of memory out of 3000000
- 5468 multiletter control sequences out of 15000+200000
+ 4061 strings out of 495291
+ 51599 string characters out of 3182829
+ 148130 words of memory out of 3000000
+ 7277 multiletter control sequences out of 15000+200000
  9330 words of font info for 34 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
- 27i,6n,24p,282b,201s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 31i,6n,50p,282b,1902s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on latex-version.pdf (3 pages, 84047 bytes).
+Output written on latex-version.pdf (4 pages, 89152 bytes).
 PDF statistics:
- 36 PDF objects out of 1000 (max. 8388607)
+ 39 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
