@@ -1,4 +1,4 @@
-char simname[] = "Y86 Processor: pipe-bugencc.hcl";
+char simname[] = "Y86 Processor: pipe-zzcc.hcl";
 #include <stdio.h>
 #include "isa.h"
 #include "pipeline.h"
@@ -6,6 +6,8 @@ char simname[] = "Y86 Processor: pipe-bugencc.hcl";
 #include "sim.h"
 int sim_main(int argc, char *argv[]);
 int main(int argc, char *argv[]){return sim_main(argc,argv);}
+int gen_aluA();
+int gen_aluB();
 int gen_f_pc()
 {
     return ((((ex_mem_curr->icode) == (I_JMP)) & ((ex_mem_curr->ifun) == 
@@ -67,48 +69,13 @@ int gen_f_predPC()
           (if_id_next->icode) == (I_JMP)) & ((if_id_next->ifun) == (C_YES))
         ) ? (if_id_next->valc) : (((if_id_next->icode) == (I_JMP)) & (
           (if_id_curr->icode) == (I_ALU) || (if_id_curr->icode) == 
-          (I_IADDL))) ? (if_id_next->valc) : (((((if_id_next->icode) == 
-              (I_JMP)) & ((id_ex_curr->icode) == (I_ALU) || 
-              (id_ex_curr->icode) == (I_IADDL))) & ((if_id_next->ifun) == 
-            (C_LE))) & ((ex_mem_next->vale) > 0)) ? (if_id_next->valp) : (((
-            ((if_id_next->icode) == (I_JMP)) & ((id_ex_curr->icode) == 
-              (I_ALU) || (id_ex_curr->icode) == (I_IADDL))) & (
-            (if_id_next->ifun) == (C_L))) & ((ex_mem_next->vale) >= 0)) ? 
-      (if_id_next->valp) : (((((if_id_next->icode) == (I_JMP)) & (
-              (id_ex_curr->icode) == (I_ALU) || (id_ex_curr->icode) == 
-              (I_IADDL))) & ((if_id_next->ifun) == (C_E))) & (
-          (ex_mem_next->vale) != 0)) ? (if_id_next->valp) : ((((
-              (if_id_next->icode) == (I_JMP)) & ((id_ex_curr->icode) == 
-              (I_ALU) || (id_ex_curr->icode) == (I_IADDL))) & (
-            (if_id_next->ifun) == (C_NE))) & ((ex_mem_next->vale) == 0)) ? 
-      (if_id_next->valp) : (((((if_id_next->icode) == (I_JMP)) & (
-              (id_ex_curr->icode) == (I_ALU) || (id_ex_curr->icode) == 
-              (I_IADDL))) & ((if_id_next->ifun) == (C_GE))) & (
-          (ex_mem_next->vale) < 0)) ? (if_id_next->valp) : ((((
-              (if_id_next->icode) == (I_JMP)) & ((id_ex_curr->icode) == 
-              (I_ALU) || (id_ex_curr->icode) == (I_IADDL))) & (
-            (if_id_next->ifun) == (C_G))) & ((ex_mem_next->vale) <= 0)) ? 
-      (if_id_next->valp) : (((((if_id_next->icode) == (I_JMP)) & !(
-              (id_ex_curr->icode) == (I_ALU) || (id_ex_curr->icode) == 
-              (I_IADDL))) & ((if_id_next->ifun) == (C_LE))) & !((cc) == 1
-           || (cc) == 2 || (cc) == 4 || (cc) == 5)) ? (if_id_next->valp) : (((
-            ((if_id_next->icode) == (I_JMP)) & !((id_ex_curr->icode) == 
-              (I_ALU) || (id_ex_curr->icode) == (I_IADDL))) & (
-            (if_id_next->ifun) == (C_L))) & !((cc) == 1 || (cc) == 2 || (cc)
-           == 5)) ? (if_id_next->valp) : (((((if_id_next->icode) == (I_JMP))
-             & !((id_ex_curr->icode) == (I_ALU) || (id_ex_curr->icode) == 
-              (I_IADDL))) & ((if_id_next->ifun) == (C_E))) & !((cc) == 4 || 
-          (cc) == 5)) ? (if_id_next->valp) : (((((if_id_next->icode) == 
-              (I_JMP)) & !((id_ex_curr->icode) == (I_ALU) || 
-              (id_ex_curr->icode) == (I_IADDL))) & ((if_id_next->ifun) == 
-            (C_NE))) & !((cc) == 0 || (cc) == 1 || (cc) == 2 || (cc) == 3)) ? 
-      (if_id_next->valp) : (((((if_id_next->icode) == (I_JMP)) & !(
-              (id_ex_curr->icode) == (I_ALU) || (id_ex_curr->icode) == 
-              (I_IADDL))) & ((if_id_next->ifun) == (C_GE))) & !((cc) == 0
-           || (cc) == 3 || (cc) == 4)) ? (if_id_next->valp) : ((((
-              (if_id_next->icode) == (I_JMP)) & !((id_ex_curr->icode) == 
-              (I_ALU) || (id_ex_curr->icode) == (I_IADDL))) & (
-            (if_id_next->ifun) == (C_G))) & !((cc) == 0 || (cc) == 3)) ? 
+          (I_IADDL))) ? (if_id_next->valc) : ((((if_id_next->icode) == 
+            (I_JMP)) & ((id_ex_curr->icode) == (I_ALU) || 
+            (id_ex_curr->icode) == (I_IADDL))) & !
+        (cond_holds(compute_cc(id_ex_curr->ifun, gen_aluA(), gen_aluB()), if_id_next->ifun))
+        ) ? (if_id_next->valp) : ((((if_id_next->icode) == (I_JMP)) & !(
+            (id_ex_curr->icode) == (I_ALU) || (id_ex_curr->icode) == 
+            (I_IADDL))) & !(cond_holds(cc, if_id_next->ifun))) ? 
       (if_id_next->valp) : ((if_id_next->icode) == (I_JMP)) ? 
       (if_id_next->valc) : (if_id_next->valp));
 }

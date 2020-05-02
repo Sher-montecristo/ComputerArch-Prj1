@@ -19,16 +19,24 @@
 #  which must be avoided to improve the performance. On the one hand, we rearranged the order of
 #  instructions to avoid stalling as much as possible. On the other hand, we use two registers to store
 #  the variable "val" , loading them separately and ahead of time.
-# - Loop unrolling:
+# - 10-way Loop Unrolling:
 #   There's much overhead in testing and updating procedure of loops, and one way to minimize it is to
 #  perform a technique named "loop unrolling". That is, we do multiple loops and update the relevant 
 #  data at once, to reduce the number of times we execute the 'add' and 'jxx' instructions. 
-# - Search tree for remaining elements:
+# - Search Tree for Remaining Elements:
 #   For large inputs, the more ways we unroll the loops, the better the program performs. However, for 
 #  small inputs, it is important to choose a good method to process the remaining elements. The simplest
 #  way is to write another loop for them, but a much better way is to totally unroll the code, that is,
 #  jump to different position for different number of remaining ones. Since Y86 does not support relative
 #  jump instruction, we designed a search tree to get the correct jump destination for each possibility.
+# - Optimized for Our Branch Prediction Design  [see also: pipe-zzcc.hcl]
+#   For this program, a significant performance factor is the branch prediction failure for count++. In 
+#  "pipe-zzcc.hcl", we made a special optimization for the situation like this:
+#    Instruction:   any    non-alu    jxx
+#    Stage:         EX       ID       IF
+#   Note that in this case, we can forward the conditions from EX stage to IF and predict the branch with
+#  100% accuracy. Thus, we optimized the program to ensure that there were as many of these patterns as
+#  possible and took much advantage of it, which leads to an average CPE of 7.79.
 ##################################################################
 # Do not modify this portion
 # Function prologue.
@@ -45,8 +53,8 @@ ncopy:	pushl %ebp		# Save old frame pointer
 # You can modify this portion
 
 # Bugen: Entry
-	xorl %eax, %eax		# count = 0
 	iaddl $-9, %edx		# len -= 9, i.e., initial_len <= 9?
+	irmovl $0, %eax		# count = 0
 	jle Remaining		# if so, goto Remaining
 
 # Bugen: Loop unrolling part
@@ -119,12 +127,12 @@ LoopEnd:
 
 # Bugen: Remaining part
 Remaining:
-	xorl %esi, %esi
-RemTest:
 	iaddl $6, %edx		# [-9,0] -> [-3,6]	(+3)
-	jl RemTestL
+RemTest:
+	irmovl $0, %esi
 	jg RemTestR
-	jmp Rem3
+	je Rem3
+	# jmp RemTestL
 RemTestL:
 	iaddl $2, %edx		# [-3,-1] -> [-1,1]	(+1)
 	je Rem1

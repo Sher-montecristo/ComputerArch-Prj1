@@ -11,7 +11,6 @@
     pushl   %eax
     call    copy_block
     halt
-    
 .align 4
 # Source block
 src:
