@@ -29,6 +29,14 @@
 #  way is to write another loop for them, but a much better way is to totally unroll the code, that is,
 #  jump to different position for different number of remaining ones. Since Y86 does not support relative
 #  jump instruction, we designed a search tree to get the correct jump destination for each possibility.
+# - Optimized for our branch prediction design  [see also: pipe-zzcc.hcl]
+#   For this program, a significant performance factor is the branch prediction failure for count++. In 
+#  "pipe-zzcc.hcl", we made a special optimization for the situation like this:
+#    Instruction:   any    non-alu    jxx
+#    Stage:         EX       ID       IF
+#   Note that in this case, we can forward the conditions from EX stage to IF and predict the branch with
+#  100% accuracy. Thus, we optimized the program to ensure that there were as many of these patterns as
+#  possible and took much advantage of it, which leads to an average CPE of 7.80.
 ##################################################################
 # Do not modify this portion
 # Function prologue.
