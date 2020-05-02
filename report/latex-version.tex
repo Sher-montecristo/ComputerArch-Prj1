@@ -11,23 +11,7 @@
 \usepackage{graphicx} %插入图片的宏包
 \usepackage{float} %设置图片浮动位置的宏包
 \usepackage{subfigure} %插入多图时用子图显示的宏包
-
-\lstdefinelanguage
-   [x64]{Assembler}     % add a "x64" dialect of Assembler
-   [x86masm]{Assembler} % based on the "x86masm" dialect
-   % with these extra keywords:
-   {morekeywords={CDQE,CQO,CMPSQ,CMPXCHG16B,JRCXZ,LODSQ,MOVSXD, %
-                  POPFQ,PUSHFQ,SCASQ,STOSQ,IRETQ,RDTSCP,SWAPGS, %
-                  rax,rdx,rcx,rbx,rsi,rdi,rsp,rbp, %
-                  r8,r8d,r8w,r8b,r9,r9d,r9w,r9b, %
-                  r10,r10d,r10w,r10b,r11,r11d,r11w,r11b, %
-                  r12,r12d,r12w,r12b,r13,r13d,r13w,r13b, %
-                  r14,r14d,r14w,r14b,r15,r15d,r15w,r15b}} % etc.
-
-\lstset{language=[x64]Assembler}
-
-%\usepackage{times} % Uncomment to use the Times New Roman font
-
+\usepackage{times} % Uncomment to use the Times New Roman font                               
 %----------------------------------------------------------------------------------------
 %	DOCUMENT INFORMATION
 %----------------------------------------------------------------------------------------
@@ -323,17 +307,103 @@ stack:
 \subsection{Part B}
 
 \subsubsection{Analysis}
-
+In part B, we are asked to extend the SEQ processor to support instruction "iaddl" by modifying SEQ-full.hcl.
+Once we understand the processing logic and HCL syntax of the y86 seq processor, the problem becomes very simple.
+We can do it in five minutes because all we need to do is change the followings in the HCL
+\begin{itemize}
+        \item Add "IIADDL" in the choices region of (bool) instr\_valid since iaddl is a valid instruction.
+        \item Add "IIADDL" in the choices region of (bool) need\_regid since iaddl operation involves one register.
+        \item Add "IIADDL" in the choices region of (bool) need\_valC since iaddl operation involves one constend(represented by valC in the circult of y86 SEQ).
+        \item Add "IIADDL" in the choices region of (bool) set\_cc since iaddl operation involves ALU operation which will set flags.
+        \item When icode is IIADDL, alufun will be ALUADD since the operation is "adding" the constand to rB.
+        \item When icode is IIADDL, srcB is from rB since the second operand of iaddl is a register.
+        \item When icode is IIADDL, dstE (where the result from ALU is passed towards) is rB since "iaddl constant, rB" means rB += constant (rB is updated). 
+        \item When icode is IIADDL, aluA (the first op) is valC (the constant in the instruction) since "iaddl constant, rB" means the first op is the constant (valC).
+        \item When icode is IIADDL, aluB (the second op) is valB (the value of the second register that is read) for the same reason above.
+\end{itemize}
 [In this part, you should give an overall analysis for the task, like difficult point, core technique and so on.]
 
 \subsubsection{Code}
-
-[In this part, you should place your code and make it readable in Latex, please. Writing necessary comments for codes is a good habit.]
-
+\begin{center}
+        \textbf{Modifications in SEQ-full.hcl}
+\end{center}
+\begin{lstlisting}
+--------------------------------------------------------------------
+bool instr_valid = icode in 
+{ INOP, IHALT, IRRMOVL, IIRMOVL, IRMMOVL, IMRMOVL,
+       IOPL, IJXX, ICALL, IRET, IPUSHL, IPOPL, IIADDL };
+--------------------------------------------------------------------
+# Does fetched instruction require a regid byte?
+bool need_regids =
+        icode in { IRRMOVL, IOPL, IPUSHL, IPOPL, 
+                IIRMOVL, IRMMOVL, IMRMOVL, IIADDL };
+--------------------------------------------------------------------
+# Does fetched instruction require a constant word?
+bool need_valC =
+        icode in { IIRMOVL, IRMMOVL, IMRMOVL, IJXX, ICALL, IIADDL };
+--------------------------------------------------------------------
+## What register should be used as the B source?
+int srcB = [
+        icode in { IOPL, IRMMOVL, IMRMOVL, IIADDL  } : rB;
+        icode in { IPUSHL, IPOPL, ICALL, IRET } : RESP;
+        1 : RNONE;  # Don't need register
+];
+--------------------------------------------------------------------
+## What register should be used as the E destination?
+int dstE = [
+        icode in { IRRMOVL } && Cnd : rB;
+        icode in { IIRMOVL, IOPL, IIADDL } : rB;
+        icode in { IPUSHL, IPOPL, ICALL, IRET } : RESP;
+        1 : RNONE;  # Don't write any register
+];
+--------------------------------------------------------------------
+## Select input A to ALU
+int aluA = [
+        icode in { IRRMOVL, IOPL } : valA;
+        icode in { IIRMOVL, IRMMOVL, IMRMOVL, IIADDL } : valC;
+        icode in { ICALL, IPUSHL } : -4;
+        icode in { IRET, IPOPL } : 4;
+        # Other instructions don't need ALU
+];
+--------------------------------------------------------------------
+## Select input B to ALU
+int aluB = [
+        icode in { IRMMOVL, IMRMOVL, IOPL, ICALL, 
+                IPUSHL, IRET, IPOPL, IIADDL } : valB;
+        icode in { IRRMOVL, IIRMOVL } : 0;
+        # Other instructions don't need ALU
+];
+--------------------------------------------------------------------
+## Set the ALU function
+int alufun = [
+        icode == IOPL : ifun;
+        icode == IIADDL : ALUADD;
+        1 : ALUADD;
+];
+--------------------------------------------------------------------
+## Should the condition codes be updated?
+bool set_cc = icode in { IOPL, IIADDL };
+--------------------------------------------------------------------
+\end{lstlisting}
 \subsubsection{Evaluation}
-
-[In this part, you should place the figures of experiments for your codes, prove the correctness and validate the performance with your own words for each figure’s explanation.]
-
+\begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+        \centering %图片居中
+        \includegraphics[width=1.0\textwidth]{partB-benchmark.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{part B benchmark test} %最终文档中希望显示的图片标题
+        \label{Fig.partB-benchmark} %用于文内引用的标签
+\end{figure}
+\begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+        \centering %图片居中
+        \includegraphics[width=0.6\textwidth]{partB-regression-test.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{part B regression test} %最终文档中希望显示的图片标题
+        \label{Fig.partB-regression} %用于文内引用的标签
+\end{figure}
+\begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+        \centering %图片居中
+        \includegraphics[width=0.6\textwidth]{partB-test-iaddl.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{part B iaddl test} %最终文档中希望显示的图片标题
+        \label{Fig.partB-iaddl} %用于文内引用的标签
+\end{figure}
 \subsection{Part C}
 
 \subsubsection{Analysis}
