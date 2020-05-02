@@ -45,8 +45,8 @@ ncopy:	pushl %ebp		# Save old frame pointer
 # You can modify this portion
 
 # Bugen: Entry
-	xorl %eax, %eax		# count = 0
 	iaddl $-9, %edx		# len -= 9, i.e., initial_len <= 9?
+	irmovl $0, %eax		# count = 0
 	jle Remaining		# if so, goto Remaining
 
 # Bugen: Loop unrolling part
@@ -119,9 +119,9 @@ LoopEnd:
 
 # Bugen: Remaining part
 Remaining:
-	xorl %esi, %esi
-RemTest:
 	iaddl $6, %edx		# [-9,0] -> [-3,6]	(+3)
+RemTest:
+	irmovl $0, %esi
 	jl RemTestL
 	jg RemTestR
 	jmp Rem3
