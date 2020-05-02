@@ -41,10 +41,17 @@ testpsim:
 	make -C ../ptest SIM=../pipe/psim TFLAGS=-i
 	make -C ../y86-code testpsim
 	./correctness.pl -p
+	./benchmark.pl
 
 # This rule builds the PIPE simulator
 psim: psim.c sim.h pipe-$(VERSION).hcl $(MISCDIR)/isa.c $(MISCDIR)/isa.h
 	# Building the pipe-$(VERSION).hcl version of PIPE
+ifneq ($(VERSION),zzcc)
+	@echo "\e[1;31mNOTE: We have made further optimazation on branch prediction to maximize the potential of the pipeline."
+	@echo "      To get the best performance, please make 'zzcc' version by 'make' or 'make VERSION=zzcc'.\e[0m"
+else
+	@echo "\e[1;32mYEP!  You are making with the our optimized pipeline design!\e[0m"
+endif
 	$(HCL2C) -n pipe-$(VERSION).hcl < pipe-$(VERSION).hcl > pipe-$(VERSION).c
 	$(CC) $(CFLAGS) $(INC) -o psim psim.c pipe-$(VERSION).c \
 		$(MISCDIR)/isa.c $(LIBS)
