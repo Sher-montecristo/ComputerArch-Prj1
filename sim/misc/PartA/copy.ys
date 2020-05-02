@@ -1,4 +1,5 @@
 # 518030910211 ZiqiZhao
+# 518030910188 Yimin Zhao
 
 # Set up stack
     .pos    0
@@ -6,13 +7,12 @@
     rrmovl  %esp, %ebp
     irmovl  $3, %eax
     pushl   %eax
-    irmovl  dest, %eax
-    pushl   %eax
     irmovl  src, %eax
+    pushl   %eax
+    irmovl  dest, %eax
     pushl   %eax
     call    copy_block
     halt
-
 .align 4
 # Source block
 src:
@@ -26,39 +26,38 @@ dest:
     .long 0x222
     .long 0x333
 
-# sum_list func
 copy_block:
-    pushl   %ebp            # enter
+    pushl   %ebp
     rrmovl  %esp, %ebp
-    pushl   %ebx            # save %ebx
-    pushl   %edi            # save %edi -> imm
-    pushl   %esi            # save %esi -> val
-    xorl    %eax, %eax      # result
-    mrmovl  16(%ebp), %ebx   # len
-    mrmovl  12(%ebp), %edx  # dest
-    mrmovl  8(%ebp), %ecx  # src
-loop:
-    irmovl  $4, %edi
-    mrmovl  (%ecx), %esi
-    addl    %edi, %ecx
-    rmmovl  %esi, (%edx)
-    addl    %edi, %edx
+    pushl   %ecx
+    pushl   %edx
+    pushl   %edi
+    irmovl  $0, %eax         # %eax = result = 0
+    mrmovl  16(%ebp), %ecx   # %ecx = len
+    mrmovl  12(%ebp), %edx   # %edx = src
+    mrmovl  8(%ebp), %edi    # %edi = dest
+    jmp     while_loop
+
+while_loop:
+    andl    %ecx, %ecx       # check if %ecx == 0?
+    jle     return           # if so, jump to "return"
+    mrmovl  (%edx), %esi     # %esi = val = *src
+    irmovl  $4, %ebx         # %ebx = 4
+    addl    %ebx, %edx       # src++
+    rmmovl  %esi, (%edi)     # *dest = val
+    addl    %ebx, %edi       # dest++
     xorl    %esi, %eax
-    irmovl  $-1, %edi
-    addl    %edi, %ebx
-test:
-    andl    %ebx, %ebx
-    jg     loop
+    irmovl  $-1, %ebx
+    addl    %ebx, %ecx       # len--
+    jmp     while_loop
+
 return:
-    popl    %esi
     popl    %edi
-    popl    %ebx
-    rrmovl  %ebp, %esp      # leave
+    popl    %edx
+    popl    %ecx
+    rrmovl  %ebp, %esp
     popl    %ebp
     ret
-
-
 # Stack 
     .pos    0x400
 stack:
-
