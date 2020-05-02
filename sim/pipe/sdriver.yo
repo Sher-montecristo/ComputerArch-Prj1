@@ -70,61 +70,61 @@
   0x053:              | Loop0:	
   0x053: 506300000000 | 	mrmovl (%ebx), %esi	# valA = src[0]
   0x059: 507304000000 | 	mrmovl 4(%ebx), %edi	# valB = src[1]
-  0x05f: 406100000000 | 	rmmovl %esi, (%ecx)	# dst[0] = valA
-  0x065: 6266         | 	andl %esi, %esi		# valA <= 0?
+  0x05f: 6266         | 	andl %esi, %esi		# valA <= 0?
+  0x061: 406100000000 | 	rmmovl %esi, (%ecx)	# dst[0] = valA
   0x067: 7172000000   | 	jle Loop1		# if so, goto next loop
   0x06c: c0f001000000 | 	iaddl $1, %eax		# count++
   0x072:              | Loop1:	
   0x072: 506308000000 | 	mrmovl 8(%ebx), %esi	# valA = src[2]
-  0x078: 407104000000 | 	rmmovl %edi, 4(%ecx)	# dst[1] = valB
-  0x07e: 6277         | 	andl %edi, %edi		# valB <= 0?
+  0x078: 6277         | 	andl %edi, %edi		# valB <= 0?
+  0x07a: 407104000000 | 	rmmovl %edi, 4(%ecx)	# dst[1] = valB
   0x080: 718b000000   | 	jle Loop2		# if so, goto next loop
   0x085: c0f001000000 | 	iaddl $1, %eax		# count++
   0x08b:              | Loop2:
   0x08b: 50730c000000 | 	mrmovl 12(%ebx), %edi	# valB = src[3]
-  0x091: 406108000000 | 	rmmovl %esi, 8(%ecx)	# dst[2] = valA
-  0x097: 6266         | 	andl %esi, %esi		# valA <= 0?
+  0x091: 6266         | 	andl %esi, %esi		# valA <= 0?
+  0x093: 406108000000 | 	rmmovl %esi, 8(%ecx)	# dst[2] = valA
   0x099: 71a4000000   | 	jle Loop3		# if so, goto next loop
   0x09e: c0f001000000 | 	iaddl $1, %eax		# count++
   0x0a4:              | Loop3:	
   0x0a4: 506310000000 | 	mrmovl 16(%ebx), %esi	# valA = src[4]
-  0x0aa: 40710c000000 | 	rmmovl %edi, 12(%ecx)	# dst[3] = valB
-  0x0b0: 6277         | 	andl %edi, %edi		# valB <= 0?
+  0x0aa: 6277         | 	andl %edi, %edi		# valB <= 0?
+  0x0ac: 40710c000000 | 	rmmovl %edi, 12(%ecx)	# dst[3] = valB
   0x0b2: 71bd000000   | 	jle Loop4		# if so, goto next loop
   0x0b7: c0f001000000 | 	iaddl $1, %eax		# count++
   0x0bd:              | Loop4:
   0x0bd: 507314000000 | 	mrmovl 20(%ebx), %edi	# valB = src[5]
-  0x0c3: 406110000000 | 	rmmovl %esi, 16(%ecx)	# dst[4] = valA
-  0x0c9: 6266         | 	andl %esi, %esi		# valA <= 0?
+  0x0c3: 6266         | 	andl %esi, %esi		# valA <= 0?
+  0x0c5: 406110000000 | 	rmmovl %esi, 16(%ecx)	# dst[4] = valA
   0x0cb: 71d6000000   | 	jle Loop5		# if so, goto next loop
   0x0d0: c0f001000000 | 	iaddl $1, %eax		# count++
   0x0d6:              | Loop5:	
   0x0d6: 506318000000 | 	mrmovl 24(%ebx), %esi	# valA = src[6]
-  0x0dc: 407114000000 | 	rmmovl %edi, 20(%ecx)	# dst[5] = valB
-  0x0e2: 6277         | 	andl %edi, %edi		# valB <= 0?
+  0x0dc: 6277         | 	andl %edi, %edi		# valB <= 0?
+  0x0de: 407114000000 | 	rmmovl %edi, 20(%ecx)	# dst[5] = valB
   0x0e4: 71ef000000   | 	jle Loop6		# if so, goto next loop
   0x0e9: c0f001000000 | 	iaddl $1, %eax		# count++
   0x0ef:              | Loop6:
   0x0ef: 50731c000000 | 	mrmovl 28(%ebx), %edi	# valB = src[7]
-  0x0f5: 406118000000 | 	rmmovl %esi, 24(%ecx)	# dst[6] = valA
-  0x0fb: 6266         | 	andl %esi, %esi		# valA <= 0?
+  0x0f5: 6266         | 	andl %esi, %esi		# valA <= 0?
+  0x0f7: 406118000000 | 	rmmovl %esi, 24(%ecx)	# dst[6] = valA
   0x0fd: 7108010000   | 	jle Loop7		# if so, goto next loop
   0x102: c0f001000000 | 	iaddl $1, %eax		# count++
   0x108:              | Loop7:	
   0x108: 506320000000 | 	mrmovl 32(%ebx), %esi	# valA = src[8]
-  0x10e: 40711c000000 | 	rmmovl %edi, 28(%ecx)	# dst[7] = valB
-  0x114: 6277         | 	andl %edi, %edi		# valB <= 0?
+  0x10e: 6277         | 	andl %edi, %edi		# valB <= 0?
+  0x110: 40711c000000 | 	rmmovl %edi, 28(%ecx)	# dst[7] = valB
   0x116: 7121010000   | 	jle Loop8		# if so, goto next loop
   0x11b: c0f001000000 | 	iaddl $1, %eax		# count++
   0x121:              | Loop8:
   0x121: 507324000000 | 	mrmovl 36(%ebx), %edi	# valB = src[9]
-  0x127: 406120000000 | 	rmmovl %esi, 32(%ecx)	# dst[8] = valA
-  0x12d: 6266         | 	andl %esi, %esi		# valA <= 0?
+  0x127: 6266         | 	andl %esi, %esi		# valA <= 0?
+  0x129: 406120000000 | 	rmmovl %esi, 32(%ecx)	# dst[8] = valA
   0x12f: 713a010000   | 	jle Loop9		# if so, goto next loop
   0x134: c0f001000000 | 	iaddl $1, %eax		# count++
   0x13a:              | Loop9:
-  0x13a: 407124000000 | 	rmmovl %edi, 36(%ecx)	# dst[9] = valB
-  0x140: 6277         | 	andl %edi, %edi		# valB <= 0?
+  0x13a: 6277         | 	andl %edi, %edi		# valB <= 0?
+  0x13c: 407124000000 | 	rmmovl %edi, 36(%ecx)	# dst[9] = valB
   0x142: 714d010000   | 	jle LoopEnd		# if so, goto loop end
   0x147: c0f001000000 | 	iaddl $1, %eax
   0x14d:              | LoopEnd:
@@ -214,8 +214,9 @@
   0x27d: 506300000000 | 	mrmovl (%ebx), %esi	# valA = src[0]
   0x283: 718e020000   | 	jle Rem1b		# if so, goto Rem1b
   0x288: c0f001000000 | 	iaddl $1, %eax		# count++
-  0x28e: 406100000000 | Rem1b:	rmmovl %esi, (%ecx)	# dst[0] = valA
-  0x294: 6266         | 	andl %esi, %esi		# valA <= 0?
+  0x28e:              | Rem1b:	
+  0x28e: 6266         | 	andl %esi, %esi		# valA <= 0?
+  0x290: 406100000000 | 	rmmovl %esi, (%ecx)	# dst[0] = valA
   0x296: 71a1020000   | 	jle Done		# if so, goto Done
   0x29b: c0f001000000 | 	iaddl $1, %eax		# count++
                       | 
@@ -257,8 +258,8 @@
   0x2ac:              | 	.align 4
   0x2ac:              | src:
   0x2ac: 01000000     | 	.long 1
-  0x2b0: 02000000     | 	.long 2
-  0x2b4: fdffffff     | 	.long -3
+  0x2b0: feffffff     | 	.long -2
+  0x2b4: 03000000     | 	.long 3
   0x2b8: fcffffff     | 	.long -4
   0x2bc: fadebc00     | 	.long 0xbcdefa # This shouldn't get moved
                       | 

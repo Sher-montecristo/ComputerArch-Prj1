@@ -70,61 +70,61 @@ ncopy:	pushl %ebp		# Save old frame pointer
 Loop0:	
 	mrmovl (%ebx), %esi	# valA = src[0]
 	mrmovl 4(%ebx), %edi	# valB = src[1]
-	rmmovl %esi, (%ecx)	# dst[0] = valA
 	andl %esi, %esi		# valA <= 0?
+	rmmovl %esi, (%ecx)	# dst[0] = valA
 	jle Loop1		# if so, goto next loop
 	iaddl $1, %eax		# count++
 Loop1:	
 	mrmovl 8(%ebx), %esi	# valA = src[2]
-	rmmovl %edi, 4(%ecx)	# dst[1] = valB
 	andl %edi, %edi		# valB <= 0?
+	rmmovl %edi, 4(%ecx)	# dst[1] = valB
 	jle Loop2		# if so, goto next loop
 	iaddl $1, %eax		# count++
 Loop2:
 	mrmovl 12(%ebx), %edi	# valB = src[3]
-	rmmovl %esi, 8(%ecx)	# dst[2] = valA
 	andl %esi, %esi		# valA <= 0?
+	rmmovl %esi, 8(%ecx)	# dst[2] = valA
 	jle Loop3		# if so, goto next loop
 	iaddl $1, %eax		# count++
 Loop3:	
 	mrmovl 16(%ebx), %esi	# valA = src[4]
-	rmmovl %edi, 12(%ecx)	# dst[3] = valB
 	andl %edi, %edi		# valB <= 0?
+	rmmovl %edi, 12(%ecx)	# dst[3] = valB
 	jle Loop4		# if so, goto next loop
 	iaddl $1, %eax		# count++
 Loop4:
 	mrmovl 20(%ebx), %edi	# valB = src[5]
-	rmmovl %esi, 16(%ecx)	# dst[4] = valA
 	andl %esi, %esi		# valA <= 0?
+	rmmovl %esi, 16(%ecx)	# dst[4] = valA
 	jle Loop5		# if so, goto next loop
 	iaddl $1, %eax		# count++
 Loop5:	
 	mrmovl 24(%ebx), %esi	# valA = src[6]
-	rmmovl %edi, 20(%ecx)	# dst[5] = valB
 	andl %edi, %edi		# valB <= 0?
+	rmmovl %edi, 20(%ecx)	# dst[5] = valB
 	jle Loop6		# if so, goto next loop
 	iaddl $1, %eax		# count++
 Loop6:
 	mrmovl 28(%ebx), %edi	# valB = src[7]
-	rmmovl %esi, 24(%ecx)	# dst[6] = valA
 	andl %esi, %esi		# valA <= 0?
+	rmmovl %esi, 24(%ecx)	# dst[6] = valA
 	jle Loop7		# if so, goto next loop
 	iaddl $1, %eax		# count++
 Loop7:	
 	mrmovl 32(%ebx), %esi	# valA = src[8]
-	rmmovl %edi, 28(%ecx)	# dst[7] = valB
 	andl %edi, %edi		# valB <= 0?
+	rmmovl %edi, 28(%ecx)	# dst[7] = valB
 	jle Loop8		# if so, goto next loop
 	iaddl $1, %eax		# count++
 Loop8:
 	mrmovl 36(%ebx), %edi	# valB = src[9]
-	rmmovl %esi, 32(%ecx)	# dst[8] = valA
 	andl %esi, %esi		# valA <= 0?
+	rmmovl %esi, 32(%ecx)	# dst[8] = valA
 	jle Loop9		# if so, goto next loop
 	iaddl $1, %eax		# count++
 Loop9:
-	rmmovl %edi, 36(%ecx)	# dst[9] = valB
 	andl %edi, %edi		# valB <= 0?
+	rmmovl %edi, 36(%ecx)	# dst[9] = valB
 	jle LoopEnd		# if so, goto loop end
 	iaddl $1, %eax
 LoopEnd:
@@ -214,8 +214,9 @@ Rem1:
 	mrmovl (%ebx), %esi	# valA = src[0]
 	jle Rem1b		# if so, goto Rem1b
 	iaddl $1, %eax		# count++
-Rem1b:	rmmovl %esi, (%ecx)	# dst[0] = valA
+Rem1b:	
 	andl %esi, %esi		# valA <= 0?
+	rmmovl %esi, (%ecx)	# dst[0] = valA
 	jle Done		# if so, goto Done
 	iaddl $1, %eax		# count++
 
@@ -256,65 +257,65 @@ EndFun:
 ###############################
 	.align 4
 src:
-	.long -1
-	.long -2
-	.long 3
-	.long -4
+	.long 1
+	.long 2
+	.long -3
+	.long 4
 	.long 5
-	.long -6
-	.long 7
-	.long 8
-	.long -9
+	.long 6
+	.long -7
+	.long -8
+	.long 9
 	.long 10
 	.long 11
 	.long -12
 	.long -13
-	.long 14
+	.long -14
 	.long -15
-	.long -16
-	.long -17
-	.long -18
+	.long 16
+	.long 17
+	.long 18
 	.long 19
-	.long 20
-	.long 21
-	.long 22
-	.long 23
-	.long 24
+	.long -20
+	.long -21
+	.long -22
+	.long -23
+	.long -24
 	.long 25
 	.long 26
-	.long -27
-	.long 28
-	.long -29
+	.long 27
+	.long -28
+	.long 29
 	.long -30
-	.long -31
+	.long 31
 	.long 32
 	.long -33
-	.long -34
+	.long 34
 	.long 35
 	.long -36
-	.long -37
-	.long -38
-	.long 39
-	.long -40
+	.long 37
+	.long 38
+	.long -39
+	.long 40
 	.long 41
-	.long -42
-	.long 43
-	.long 44
+	.long 42
+	.long -43
+	.long -44
 	.long 45
-	.long -46
-	.long 47
-	.long -48
-	.long 49
+	.long 46
+	.long -47
+	.long 48
+	.long -49
 	.long 50
-	.long 51
-	.long -52
+	.long -51
+	.long 52
 	.long -53
-	.long 54
-	.long -55
+	.long -54
+	.long 55
 	.long -56
-	.long 57
-	.long 58
-	.long 59
+	.long -57
+	.long -58
+	.long -59
 	.long -60
 	.long -61
 	.long -62
