@@ -1,8 +1,13 @@
 # 518030910211 ZiqiZhao
 
 # Added instruction `iaddl`
-# The same changes as in `seq-full.hcl`
-# No pipeline control signal modified
+#   Similar to the changes in `../seq/full.hcl`.
+#   No pipeline control signal modified.
+
+# NOTE: We have made further optimization on branch prediction to maximize the potential of the pipeline.
+#       To obtain the best performance, please refer to `pipe-zzcc.hcl`.
+
+
 
 
 #/* $begin pipe-all-hcl */
