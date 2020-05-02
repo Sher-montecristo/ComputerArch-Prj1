@@ -7,8 +7,21 @@
 \usepackage{subfigure} % Required for the inclusion of images
 \usepackage{natbib} % Required to change bibliography style to APA
 \usepackage{amsmath} % Required for some math elements 
+\usepackage{listings}
 
+\lstdefinelanguage
+   [x64]{Assembler}     % add a "x64" dialect of Assembler
+   [x86masm]{Assembler} % based on the "x86masm" dialect
+   % with these extra keywords:
+   {morekeywords={CDQE,CQO,CMPSQ,CMPXCHG16B,JRCXZ,LODSQ,MOVSXD, %
+                  POPFQ,PUSHFQ,SCASQ,STOSQ,IRETQ,RDTSCP,SWAPGS, %
+                  rax,rdx,rcx,rbx,rsi,rdi,rsp,rbp, %
+                  r8,r8d,r8w,r8b,r9,r9d,r9w,r9b, %
+                  r10,r10d,r10w,r10b,r11,r11d,r11w,r11b, %
+                  r12,r12d,r12w,r12b,r13,r13d,r13w,r13b, %
+                  r14,r14d,r14w,r14b,r15,r15d,r15w,r15b}} % etc.
 
+\lstset{language=[x64]Assembler}
 
 %\usepackage{times} % Uncomment to use the Times New Roman font
 
@@ -44,14 +57,14 @@ The following is the roadmap to finish this part:
 \end{itemize}
 \textbf{Part C}
 \\
-We achieve full scores in the benchmark testing in just 2 hours, 
-but we spent 2 more days researching all the potential methods to optimize the performance even further. 
+We achieve full scores in the benchmark testing \textbf{in just 2 hours}, 
+but we \textbf{spent 2 more days} researching all the potential methods to optimize the performance even further. 
 The following is our roadmap:
 \begin{itemize}
-        \item Change the order of the instruction sequence to avoid data hazard and structure hazards, which leaves $CPI \approx 12$.
-        \item Beyond the changes on instructions order, we use loop unrolling to reduce the number of conditional check and registers updating.
-        \item Use a binary search tree to find the precise remaining number of loops after several rounds of unrolling to achieve complete unrolling, which leaves $CPI \approx 8.95$
-        \item 
+        \item Change the order of the instruction sequence to avoid data hazard and structure hazards, which leaves $CPI = 12.96$.
+        \item Beyond the changes on instructions order, we use loop unrolling to reduce the number of conditional check and registers updating, which leaves $CPI = 9.83$
+        \item Use a binary search tree to find the precise remaining number of loops after several rounds of unrolling to achieve complete unrolling, which leaves $CPI = 8.95$
+        \item Modify the HCL file to achieve 100\% accuracy in branch prediction for certain code pattern, which brings $CPI$ down to $7.78$.
 \end{itemize}
 \textbf{Contribution}
 \\
@@ -67,7 +80,60 @@ like difficult point, core technique and so on.]
 
 \subsubsection{Code}
 
-[In this part, you should place your code and make it readable in Microsoft Word, please. Writing necessary comments for codes is a good habit.]
+\begin{lstlisting}
+        # 518030910211 ZiqiZhao
+        # 518030910188 YiminZhao
+
+# Set up stack
+        .pos    0
+        irmovl  stack,  %esp
+        rrmovl  %esp,   %ebp
+        pushl   %edx            # save %edx
+        irmovl  ele1,   %eax
+        pushl   %eax
+        call    sum_list
+        popl    %edx            # flatten the stack for ele1
+        popl    %edx            # restore %edx
+        halt
+
+# Sample linked list 
+.align 4
+ele1:
+        .long   0x00a
+        .long   ele2
+ele2:
+        .long   0x0b0
+        .long   ele3
+ele3:
+        .long   0xc00
+        .long   0
+
+# sum_list func
+sum_list:
+        pushl   %ebp            # enter
+        pushl   %ecx            # save %ecx
+        rrmovl  %esp,   %ebp
+        xorl    %eax,   %eax    # clear %eax
+        mrmovl  12(%ebp),%edx   # get ls
+        jmp     test
+loop:
+        mrmovl  (%edx), %ecx
+        addl    %ecx,   %eax
+        mrmovl  4(%edx),%edx
+test:
+        andl    %edx,   %edx
+        jne     loop            # %edx != 0
+return:
+        rrmovl  %ebp,   %esp    # leave
+        popl    %ecx
+        popl    %ebp
+        ret
+
+# Stack 
+        .pos    0x400
+stack:
+\end{lstlisting}
+
 
 \subsubsection{Evaluation}
 
