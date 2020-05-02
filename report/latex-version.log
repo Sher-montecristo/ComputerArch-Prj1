@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2019.10.29)  2 MAY 2020 16:42
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2019.10.29)  2 MAY 2020 18:57
 entering extended mode
 **latex-version
 (c:\Users\18123\VscodeProject\ComputerArch-Prj1\report\latex-version.tex
@@ -144,40 +144,47 @@ File: lstmisc.sty 2007/02/22 1.4 (Carsten Heinz)
 File: listings.cfg 2007/02/22 1.4 listings configuration
 ))
 Package: listings 2007/02/22 1.4 (Carsten Heinz)
- (C:\CTEX\MiKTeX\tex\latex\listings\lstlang1.sty
+ (C:\CTEX\MiKTeX\tex\latex\float\float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count113
+\float@exts=\toks21
+\float@box=\box30
+\@float@everytoks=\toks22
+\@floatcapt=\box31
+) (C:\CTEX\MiKTeX\tex\latex\listings\lstlang1.sty
 File: lstlang1.sty 2004/09/05 1.3 listings language file
 ) (C:\CTEX\MiKTeX\tex\latex\listings\lstlang2.sty
 File: lstlang2.sty 2004/09/05 1.3 listings language file
 ) (C:\CTEX\MiKTeX\tex\latex\listings\lstlang3.sty
 File: lstlang3.sty 2004/09/05 1.3 listings language file
 ) (c:\Users\18123\VscodeProject\ComputerArch-Prj1\report\latex-version.aux)
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 39.
-LaTeX Font Info:    ... okay on input line 39.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 39.
-LaTeX Font Info:    ... okay on input line 39.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 39.
-LaTeX Font Info:    ... okay on input line 39.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 39.
-LaTeX Font Info:    ... okay on input line 39.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 39.
-LaTeX Font Info:    ... okay on input line 39.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 39.
-LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
  (C:\CTEX\MiKTeX\tex\context\base\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count113
+\scratchcounter=\count114
 \scratchdimen=\dimen120
-\scratchbox=\box30
-\nofMPsegments=\count114
-\nofMParguments=\count115
-\everyMPshowfont=\toks21
-\MPscratchCnt=\count116
+\scratchbox=\box32
+\nofMPsegments=\count115
+\nofMParguments=\count116
+\everyMPshowfont=\toks23
+\MPscratchCnt=\count117
 \MPscratchDim=\dimen121
-\MPnumerator=\count117
-\makeMPintoPDFobject=\count118
-\everyMPtoPDFconversion=\toks22
+\MPnumerator=\count118
+\makeMPintoPDFobject=\count119
+\everyMPtoPDFconversion=\toks24
 )
-\c@lstlisting=\count119
+\c@lstlisting=\count120
 Missing character: There is no è in font cmr12!
 Missing character: There is no µ in font cmr12!
 Missing character: There is no µ in font cmr12!
@@ -199,12 +206,12 @@ Missing character: There is no ‘ in font cmr12!
 Missing character: There is no ï in font cmr10!
 Missing character: There is no ¼ in font cmr10!
 Missing character: There is no Œ in font cmr10!
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 54.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 57.
  (C:\CTEX\MiKTeX\tex\latex\base\omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 54.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 57.
  [1
 
 {C:/CTEX/UserData/pdftex/config/pdftex.map{Unicode.sfd}{UGBK.sfd}}]
@@ -212,34 +219,67 @@ Missing character: There is no ï in font cmr10!
 Missing character: There is no ¼ in font cmr10!
 Missing character: There is no Œ in font cmr10!
 
-Overfull \hbox (15.00366pt too wide) in paragraph at lines 105--106
+Overfull \hbox (15.00366pt too wide) in paragraph at lines 112--113
 [][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-[2]
+[2] [3]
+LaTeX Font Info:    Try loading font information for OML+cmr on input line 195.
+ (C:\CTEX\MiKTeX\tex\latex\base\omlcmr.fd
+File: omlcmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OML/cmr/m/n' in size <10> not available
+(Font)              Font shape `OML/cmm/m/it' tried instead on input line 195.
+ [4] [5] [6]
+Underfull \hbox (badness 10000) in paragraph at lines 282--283
+
+ []
+
+<partA-sum.jpg, id=26, 448.67625pt x 235.37938pt>
+File: partA-sum.jpg Graphic file (type jpg)
+ <use partA-sum.jpg>
+Package pdftex.def Info: partA-sum.jpg used on input line 286.
+(pdftex.def)             Requested size: 241.49895pt x 126.68993pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 294--295
+
+ []
+
+<partA-rsum.jpg, id=27, 449.17813pt x 402.50375pt>
+File: partA-rsum.jpg Graphic file (type jpg)
+ <use partA-rsum.jpg>
+Package pdftex.def Info: partA-rsum.jpg used on input line 298.
+(pdftex.def)             Requested size: 241.49895pt x 216.40295pt.
+ [7 <c:/Users/18123/VscodeProject/ComputerArch-Prj1/report/partA-sum.jpg> <c:/Users/18123/VscodeProject/ComputerArch-Prj1/report/partA-rsum.jpg>]
+Underfull \hbox (badness 10000) in paragraph at lines 308--309
+
+ []
+
+<partA-copy.jpg, id=32, 449.17813pt x 364.86313pt>
+File: partA-copy.jpg Graphic file (type jpg)
+ <use partA-copy.jpg>
+Package pdftex.def Info: partA-copy.jpg used on input line 312.
+(pdftex.def)             Requested size: 241.49895pt x 196.16577pt.
 Missing character: There is no â in font cmr10!
 Missing character: There is no € in font cmr10!
 Missing character: There is no ™ in font cmr10!
- [3]
+ [8 <c:/Users/18123/VscodeProject/ComputerArch-Prj1/report/partA-copy.jpg>]
 Missing character: There is no â in font cmr10!
 Missing character: There is no € in font cmr10!
 Missing character: There is no ™ in font cmr10!
-Missing character: There is no â in font cmr10!
-Missing character: There is no € in font cmr10!
-Missing character: There is no ™ in font cmr10!
- [4] (c:\Users\18123\VscodeProject\ComputerArch-Prj1\report\latex-version.aux) ) 
+ [9] (c:\Users\18123\VscodeProject\ComputerArch-Prj1\report\latex-version.aux) ) 
 Here is how much of TeX's memory you used:
- 4061 strings out of 495291
- 51599 string characters out of 3182829
- 152130 words of memory out of 3000000
- 7277 multiletter control sequences out of 15000+200000
+ 4184 strings out of 495291
+ 53155 string characters out of 3182829
+ 161464 words of memory out of 3000000
+ 7389 multiletter control sequences out of 15000+200000
  9330 words of font info for 34 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
  31i,6n,50p,282b,1904s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on latex-version.pdf (4 pages, 90275 bytes).
+Output written on latex-version.pdf (9 pages, 406101 bytes).
 PDF statistics:
- 39 PDF objects out of 1000 (max. 8388607)
+ 59 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 16 words of extra memory for PDF output out of 10000 (max. 10000000)
 

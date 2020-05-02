@@ -8,6 +8,9 @@
 \usepackage{natbib} % Required to change bibliography style to APA
 \usepackage{amsmath} % Required for some math elements 
 \usepackage{listings}
+\usepackage{graphicx} %插入图片的宏包
+\usepackage{float} %设置图片浮动位置的宏包
+\usepackage{subfigure} %插入多图时用子图显示的宏包
 
 \lstdefinelanguage
    [x64]{Assembler}     % add a "x64" dialect of Assembler
@@ -79,12 +82,16 @@ From a macro point of view，this part is relatively easy.
 But there are plenty of optimizations worth exploring in terms of code readability and elegance.\\
 \textbf{Difficult Point} 
 \begin{itemize}
-        \item Be aware of the state of the stack like calling a function will push the ret address first.
-        \item Be careful to protect the callee-save register
-        \item Implement function recursion smartly
+        \item Always pull the correct element from the stack.
+        \item Be careful to protect the callee-save register.
+        \item Implement function recursion smartly.
 \end{itemize}
-[In this part, you should give an overall analysis for the task, 
-like difficult point, core technique and so on.]
+\textbf{Core Techniques}
+\begin{itemize}
+        \item Mimicking C functions, division of functional areas with enough and clear label.
+        \item Get the fastest completion speed by coding line by line refering to C language functions
+        \item Always draw a picture of the stack to ensure the correctness of fetching a variable.
+\end{itemize}
 
 \subsubsection{Code}
 \begin{center}
@@ -143,11 +150,175 @@ return:
         .pos    0x400
 stack:
 \end{lstlisting}
+\pagebreak
+\begin{center}
+        \textbf{rsum.ys}
+\end{center}
+\begin{lstlisting}
+# 518030910211 ZiqiZhao
+# 518030910188 YiminZhao
+
+# Set up stack
+    .pos    0
+    irmovl  stack, %esp
+    rrmovl  %esp, %ebp
+    pushl   %edx
+    irmovl  ele1, %eax
+    pushl   %eax
+    call    rsum_list
+    popl    %edx           # eat ele1
+    popl    %edx           # restore %edx
+    halt
+
+# Sample linked list 
+.align 4
+ele1:
+    .long   0x00a
+    .long   ele2
+ele2:
+    .long   0x0b0
+    .long   ele3
+ele3:
+    .long   0xc00
+    .long   0
+
+# rsum_list func
+rsum_list:
+    pushl   %ebp            # enter
+    rrmovl  %esp, %ebp
+    xorl    %eax, %eax
+    mrmovl  8(%ebp), %edx   # get ls
+    andl    %edx, %edx
+    je      return          # ls == NULL
+do:
+    pushl   %ebx            # save %ebx
+    mrmovl  (%edx), %ebx    # mov ls->val to %ebx
+    mrmovl  4(%edx), %eax
+    pushl   %eax            # push ls->next
+    call    rsum_list
+    addl    %ebx, %eax      # ret = val + ret
+    popl    %edx            # eat para
+    popl    %ebx            # restore %ebx
+return:
+    rrmovl  %ebp, %esp      # leave
+    popl    %ebp
+    ret
 
 
+# Stack 
+    .pos    0x400
+stack:
+\end{lstlisting}
+\begin{center}
+        \textbf{copy.ys}
+\end{center}
+\begin{lstlisting}
+# 518030910211 ZiqiZhao
+# 518030910188 Yimin Zhao
+
+# Set up stack
+    .pos    0
+    irmovl  stack, %esp
+    rrmovl  %esp, %ebp
+    irmovl  $3, %eax
+    pushl   %eax
+    irmovl  src, %eax
+    pushl   %eax
+    irmovl  dest, %eax
+    pushl   %eax
+    call    copy_block
+    halt
+.align 4
+# Source block
+src:
+    .long 0x00a
+    .long 0x0b0
+    .long 0xc00
+
+# Destination block
+dest:
+    .long 0x111
+    .long 0x222
+    .long 0x333
+
+copy_block:
+    pushl   %ebp
+    rrmovl  %esp, %ebp
+    pushl   %ecx
+    pushl   %edx
+    pushl   %edi
+    irmovl  $0, %eax         # %eax = result = 0
+    mrmovl  16(%ebp), %ecx   # %ecx = len
+    mrmovl  12(%ebp), %edx   # %edx = src
+    mrmovl  8(%ebp), %edi    # %edi = dest
+    jmp     while_loop
+
+while_loop:
+    andl    %ecx, %ecx       # check if %ecx == 0?
+    jle     return           # if so, jump to "return"
+    mrmovl  (%edx), %esi     # %esi = val = *src
+    irmovl  $4, %ebx         # %ebx = 4
+    addl    %ebx, %edx       # src++
+    rmmovl  %esi, (%edi)     # *dest = val
+    addl    %ebx, %edi       # dest++
+    xorl    %esi, %eax
+    irmovl  $-1, %ebx
+    addl    %ebx, %ecx       # len--
+    jmp     while_loop
+
+return:
+    popl    %edi
+    popl    %edx
+    popl    %ecx
+    rrmovl  %ebp, %esp
+    popl    %ebp
+    ret
+# Stack 
+    .pos    0x400
+stack:
+\end{lstlisting}
+\pagebreak
 \subsubsection{Evaluation}
+\textbf{sum.ys}\\
 
-[In this part, you should place the figures of experiments for your codes, prove the correctness and validate the performance with your own words for each figure’s explanation.]
+\begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+        \centering %图片居中
+        \includegraphics[width=0.7\textwidth]{partA-sum.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{partA-sum.ys} %最终文档中希望显示的图片标题
+        \label{Fig.partA-sum} %用于文内引用的标签
+\end{figure}
+\begin{itemize}
+        \item The \%eax register has the correct value which is the return value of the function---$0xcba$.
+        \item The memory is not corrupted since all the modifications locate at the stack whose starting addresss is set to be $0x400$.
+\end{itemize}
+\textbf{rsum.ys}\\
+
+\begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+        \centering %图片居中
+        \includegraphics[width=0.7\textwidth]{partA-rsum.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{partA-rsum.ys} %最终文档中希望显示的图片标题
+        \label{Fig.partA-rsum} %用于文内引用的标签
+\end{figure}
+
+\begin{itemize}
+        \item The \%eax register has the correct value which is the return value of the function---$0xcba$.
+        \item The memory is not corrupted since all the modifications locate at the stack whose starting addresss is set to be $0x400$.
+\end{itemize}
+
+\textbf{copy.ys}\\
+
+\begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+        \centering %图片居中
+        \includegraphics[width=0.7\textwidth]{partA-copy.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{partA-copy.ys} %最终文档中希望显示的图片标题
+        \label{Fig.partA-copy} %用于文内引用的标签
+\end{figure}
+
+\begin{itemize}
+        \item The \%eax register has the correct value which is the return value of the function---$0xcba$.
+        \item Values are written into the memory correctly as shown in the first three rows in the "Changes to memory" part in Figure 3
+        \item The memory is not corrupted since all the modifications other than 3 source values locate at the stack whose starting addresss is set to be $0x400$.
+\end{itemize}
 
 \subsection{Part B}
 
