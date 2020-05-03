@@ -2,16 +2,15 @@
 %	PACKAGES AND DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
 
-\documentclass{article}
+\documentclass[12pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
 \usepackage{graphicx} % Required for the inclusion of images
 \usepackage{subfigure} % Required for the inclusion of images
 \usepackage{natbib} % Required to change bibliography style to APA
 \usepackage{amsmath} % Required for some math elements 
 \usepackage{listings}
-\usepackage{graphicx} %插入图片的宏包
 \usepackage{float} %设置图片浮动位置的宏包
-\usepackage{subfigure} %插入多图时用子图显示的宏包
-\usepackage{times} % Uncomment to use the Times New Roman font                     
+% \usepackage{times} % Uncomment to use the Times New Roman font                     
 \usepackage{lstcustom}          
 %----------------------------------------------------------------------------------------
 %	DOCUMENT INFORMATION
@@ -53,7 +52,7 @@ The following is our roadmap:
         \item Change the order of the instruction sequence to avoid data hazard and structure hazards as much as possible, which leaves $CPE = 12.96$.
         \item Beyond the changes on instruction order, we apply loop unrolling to reduce the number of conditional check and registers updating, which leaves $CPE = 9.83$.
         \item Use a binary search tree to find the precise remaining number of elements after several rounds of unrolling to achieve complete unrolling, which leaves $CPE = 8.95$.
-        \item Modify the pipeline design in \texttt{HCL} file to achieve 100\% accuracy in branch prediction for certain code pattern, which brings $CPE$ down to $7.79$.
+        \item Modify the pipeline design in \texttt{HCL} file to achieve 100\% accuracy in branch prediction for certain code pattern, which {\color{blue}\textbf{brings $\mathbf{CPE}$ down to $\mathbf{7.79}$}}.
 \end{itemize}
 \textbf{Contribution}
 \begin{itemize}
@@ -66,7 +65,7 @@ The following is our roadmap:
 	\item In the Part C, we first achieved full marks by simply adding the \texttt{iaddl} instruction, and in an almost software-only way. The hardware implementation of this approach is in \texttt{pipe/pipe-full.hcl}.
 	\item After that, we made a further exploration and made a modification to the branch prediction part, and finally achieved a CPE of $7.79$. {\color{blue}The hardware implementation of this approach is in \texttt{pipe/pipe-zzcc.hcl}.}
 \end{itemize}
-
+\pagebreak
 \section{Experiments}
 \subsection{Part A}
 \subsubsection{Analysis}
@@ -264,14 +263,14 @@ return:
     .pos    0x400
 stack:
 \end{lstlisting}
-\pagebreak
+
 \subsubsection{Evaluation}
 \textbf{sum.ys}\\
 
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
         \includegraphics[width=0.7\textwidth]{partA-sum-bz.png} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{partA/sum.ys} %最终文档中希望显示的图片标题
+        \caption{Part A: sum.ys} %最终文档中希望显示的图片标题
         \label{Fig.partA-sum} %用于文内引用的标签
 \end{figure}
 \begin{itemize}
@@ -282,8 +281,8 @@ stack:
 
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
-        \includegraphics[width=0.7\textwidth]{partA-rsum-bz.png} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{partA/rsum.ys} %最终文档中希望显示的图片标题
+        \includegraphics[width=0.61\textwidth]{partA-rsum-bz.png} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{Part A: rsum.ys} %最终文档中希望显示的图片标题
         \label{Fig.partA-rsum} %用于文内引用的标签
 \end{figure}
 
@@ -297,7 +296,7 @@ stack:
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
         \includegraphics[width=0.7\textwidth]{partA-copy-bz.png} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{partA/copy.ys} %最终文档中希望显示的图片标题
+        \caption{Part A: copy.ys} %最终文档中希望显示的图片标题
         \label{Fig.partA-copy} %用于文内引用的标签
 \end{figure}
 
@@ -306,7 +305,7 @@ stack:
         \item Values are written into the memory correctly as shown in the first three rows in the "Changes to memory" part in Figure 3.
         \item The memory is not corrupted since all the modifications other than \texttt{dest} locate at the stack whose starting addresss is set to be \texttt{0x400}.
 \end{itemize}
-
+\pagebreak
 \subsection{Part B}
 
 \subsubsection{Analysis}
@@ -390,21 +389,22 @@ bool set_cc = icode in { IOPL, IIADDL };
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
         \includegraphics[width=1.0\textwidth]{partB-benchmark.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{part B benchmark test} %最终文档中希望显示的图片标题
+        \caption{Part B: benchmark test} %最终文档中希望显示的图片标题
         \label{Fig.partB-benchmark} %用于文内引用的标签
 \end{figure}
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
         \includegraphics[width=0.6\textwidth]{partB-regression-test.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{part B regression test} %最终文档中希望显示的图片标题
+        \caption{Part B: regression test} %最终文档中希望显示的图片标题
         \label{Fig.partB-regression} %用于文内引用的标签
 \end{figure}
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
         \includegraphics[width=0.6\textwidth]{partB-test-iaddl.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{part B \texttt{iaddl} test} %最终文档中希望显示的图片标题
+        \caption{Part B: \texttt{iaddl} test} %最终文档中希望显示的图片标题
         \label{Fig.partB-iaddl} %用于文内引用的标签
 \end{figure}
+\pagebreak
 \subsection{Part C}
 \subsubsection{Analysis}
 In this part, we were asked to speed up the program \texttt{ncopy.ys} as much as possible by modifying the \texttt{ncopy.ys} and \texttt{HCL}.
@@ -455,18 +455,6 @@ possible and took much advantage of it, which leads to an average CPE of 7.79.
         \textbf{-----10-Way Loop Unrolling-----}\\
 \end{center}
 \begin{lstlisting}
-##################################################################
-# Do not modify this portion
-# Function prologue.
-ncopy:	pushl %ebp		# Save old frame pointer
-	rrmovl %esp,%ebp	# Set up new frame pointer
-	pushl %esi		# Save callee-save regs
-	pushl %ebx
-	pushl %edi
-	mrmovl 8(%ebp),%ebx	# src
-	mrmovl 16(%ebp),%edx	# len
-	mrmovl 12(%ebp),%ecx	# dst
-
 ##################################################################
 # You can modify this portion
 # Entry
@@ -637,9 +625,8 @@ Rem1b:
         iaddl $1, %eax		# count++
         
 \end{lstlisting}
-\pagebreak
 \begin{center}
-        \textbf{-----Modification to \texttt{hcl} (all in \texttt{pipe-zzcc.hcl})-----}\\
+        {\color{blue}\textbf{-----Modification to \texttt{hcl} (all in \texttt{pipe-zzcc.hcl})-----}}\\
         Note: we have omitted the changes for adding \texttt{iaddl}, \\which is similar to those in \texttt{../seq/seq-full.hcl}
 \end{center}
 \begin{lstlisting} 
@@ -742,27 +729,28 @@ bool E_bubble =
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
         \includegraphics[width=0.7\textwidth]{partC-regression-test.png} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{partC regression test (with \texttt{iaddl} included)} %最终文档中希望显示的图片标题
+        \caption{Part C: regression test (with \texttt{iaddl} included)} %最终文档中希望显示的图片标题
         \label{Fig.partC-regression} %用于文内引用的标签
 \end{figure}
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
         \includegraphics[width=0.7\textwidth]{partC-test2.png} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{partC benchmark test} %最终文档中希望显示的图片标题
+        \caption{Part C: benchmark test} %最终文档中希望显示的图片标题
         \label{Fig.partC-benchmark} %用于文内引用的标签
 \end{figure}
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
         \includegraphics[width=0.4\textwidth]{partC-correctness-test.png} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{partC correctness test} %最终文档中希望显示的图片标题
+        \caption{Part C: correctness test} %最终文档中希望显示的图片标题
         \label{Fig.partC-correctness} %用于文内引用的标签
 \end{figure}
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
         \includegraphics[width=0.4\textwidth]{partC-CPE-test.png} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{partC CPE test} %最终文档中希望显示的图片标题
+        \caption{Part C: CPE test} %最终文档中希望显示的图片标题
         \label{Fig.partC-CPE} %用于文内引用的标签
 \end{figure}
+\pagebreak
 \section{Conclusion}
 In this project, we completed the tasks of three parts, which were gradually developed. The first part made us familiar with Y86 assembly syntax, while the second part made us familiar with Y86 SEQ circuit logic, and the third part encouraged us to transform assembly code and Y86 pipeline design.
 The following is a summary of the completion of the three parts:\\
@@ -795,7 +783,7 @@ The logic is shown in Figure \ref{Fig.partC-attempt1}:
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
         \includegraphics[width=0.7\textwidth]{partC-attempt1.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{Part C Attempt 1} %最终文档中希望显示的图片标题
+        \caption{Part C: Attempt 1} %最终文档中希望显示的图片标题
         \label{Fig.partC-attempt1} %用于文内引用的标签
 \end{figure}
 Our initial plan is that, when we detect a \texttt{jxx} after an \texttt{andl}, 
@@ -804,7 +792,7 @@ Since in our \texttt{ncopy.ys}, there are a lot of this code patterns:
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
         \includegraphics[width=0.6\textwidth]{partC-loop-demo.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{Part C Loop 1} %最终文档中希望显示的图片标题
+        \caption{Part C: Loop of Attempt 1} %最终文档中希望显示的图片标题
         \label{Fig.partC-at1-loop} %用于文内引用的标签
 \end{figure}
 Let's take a closer look at "\texttt{andl op1, op2} $\rightarrow$ \texttt{jxx dest}".
@@ -817,7 +805,7 @@ In this attempt, we look at another code pattern, which is "\texttt{any instruct
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
         \includegraphics[width=0.7\textwidth]{partC-attempt2.png} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{Part C Attempt 2} %最终文档中希望显示的图片标题
+        \caption{Part C: Attempt 2} %最终文档中希望显示的图片标题
         \label{Fig.partC-attempt2} %用于文内引用的标签
 \end{figure}
 Since the last instruction of \texttt{jxx} is a non-alu instruction, we are able to get the correct conditional flag when \texttt{jxx} is stll in the Fetch stage. 
@@ -847,21 +835,21 @@ In this case, we seem to predict the branch by doing complex operations in the F
 \subsubsection{Performance Improvement}
 By modifying the pipeline logic, we managed to accelerate the program to a very surprising degree:
 $$
-        CPE = 12.98 \rightarrow CPE = 9.83 \rightarrow CPE = 8.95 \rightarrow CPE = 7.79
+        \text{CPE} = 12.98 \rightarrow \text{CPE} = 9.83 \rightarrow \text{CPE} = 8.95 \rightarrow {\color{blue}\textbf{CPE }\mathbf{= 7.79}}
 $$
 We even try to unlimit the number of the array size. By modifying \texttt{benchmark.pl}, 
 we push the upper bound to be 400 to test the best performance of our implementation (see Figure \ref{Fig.partC-limit}).
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
         \includegraphics[width=0.4\textwidth]{partC-larger-scale-test.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{partC larger scale test} %最终文档中希望显示的图片标题
+        \caption{Part C: larger scale test} %最终文档中希望显示的图片标题
         \label{Fig.partC-limit} %用于文内引用的标签
 \end{figure}
 From analysis, we could safely estimate that the theoretical minimum CPE should be around $4.5$ to $5.0$. \textbf{So it's almost certain that the optimizations we've done under the existing ISA framework are close to extreme.}
 \subsubsection{Code readability}
 We put a lot of effort into the readability of the code for parts A.
 \begin{itemize}
-        \item For functions that contain loops, we can always break it down into three logical regions: "loop", "test", and "return".
+        \item For functions that contain loops, we can always break it down into three logical regions: \texttt{loop}, \texttt{test}, and \texttt{return}.
         \item For various registers, we always annotate its purpose with comments
         \item For code that's not so obvious, we always leave the comment showing its counterpart in the C function next to it.
 \end{itemize}
@@ -877,6 +865,6 @@ Otherwise our second attempt should have been successful and would not have requ
 
 This project allowed us to reap the valuable sense of accomplishment brought by not giving up. We are also very grateful to have been able to take this course and to be introduced to such a valuable project.
 
-Finally, we would like to specially thank Miss Shen and the TAs for their instruction and support, so that we can successfully complete this project.
+\textbf{Finally, we would like to specially thank Miss Shen and the TAs for their instruction and support, so that we can successfully complete this project.}
 %----------------------------------------------------------------------------------------
 \end{document}
