@@ -1,11 +1,11 @@
                       | # 518030910211 ZiqiZhao
-                      | # 518030910188 Yimin Zhao
+                      | # 518030910188 YiminZhao
                       | 
                       | # Set up stack
   0x000:              |     .pos    0
   0x000: 30f400040000 |     irmovl  stack, %esp
   0x006: 2045         |     rrmovl  %esp, %ebp
-  0x008: 30f000000000 |     irmovl  $0, %eax        # len
+  0x008: 30f003000000 |     irmovl  $3, %eax        # len
   0x00e: a00f         |     pushl   %eax
   0x010: 30f038000000 |     irmovl  dest, %eax      # dest
   0x016: a00f         |     pushl   %eax
@@ -50,7 +50,7 @@
   0x083: 30f7ffffffff |     irmovl  $-1, %edi       # %edx = -1
   0x089: 6073         |     addl    %edi, %ebx      # len -= 1
   0x08b:              | test:
-  0x08b: 6233         |     andl    %ebx, %ebx      # len == 0?
+  0x08b: 6233         |     andl    %ebx, %ebx      # len > 0?
   0x08d: 766b000000   |     jg      loop            # yes -> loop
   0x092:              | return:
   0x092: b06f         |     popl    %esi            # restore registers

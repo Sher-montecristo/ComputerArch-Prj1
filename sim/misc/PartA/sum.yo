@@ -27,15 +27,15 @@
   0x030: a05f         |     pushl   %ebp            # enter
   0x032: 2045         |     rrmovl  %esp, %ebp
   0x034: 6300         |     xorl    %eax, %eax      # clear %eax
-  0x036: 502508000000 |     mrmovl  8(%ebp), %edx   # get ls
+  0x036: 502508000000 |     mrmovl  8(%ebp), %edx   # %edx = ls
   0x03c: 704f000000   |     jmp     test
   0x041:              | loop:
-  0x041: 501200000000 |     mrmovl  (%edx), %ecx
-  0x047: 6010         |     addl    %ecx, %eax
-  0x049: 502204000000 |     mrmovl  4(%edx), %edx
+  0x041: 501200000000 |     mrmovl  (%edx), %ecx    # tmp = ls->val
+  0x047: 6010         |     addl    %ecx, %eax      # val += tmp
+  0x049: 502204000000 |     mrmovl  4(%edx), %edx   # ls = ls->next
   0x04f:              | test:
-  0x04f: 6222         |     andl    %edx, %edx
-  0x051: 7441000000   |     jne     loop            # %edx != 0
+  0x04f: 6222         |     andl    %edx, %edx      # ls == 0?
+  0x051: 7441000000   |     jne     loop            # no -> loop
   0x056:              | return:
   0x056: 2054         |     rrmovl  %ebp, %esp      # leave
   0x058: b05f         |     popl    %ebp

@@ -50,7 +50,7 @@ loop:
     irmovl  $-1, %edi       # %edx = -1
     addl    %edi, %ebx      # len -= 1
 test:
-    andl    %ebx, %ebx      # len == 0?
+    andl    %ebx, %ebx      # len > 0?
     jg      loop            # yes -> loop
 return:
     popl    %esi            # restore registers

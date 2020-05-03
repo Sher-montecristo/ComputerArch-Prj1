@@ -27,15 +27,15 @@ sum_list:
     pushl   %ebp            # enter
     rrmovl  %esp, %ebp
     xorl    %eax, %eax      # clear %eax
-    mrmovl  8(%ebp), %edx   # get ls
+    mrmovl  8(%ebp), %edx   # %edx = ls
     jmp     test
 loop:
-    mrmovl  (%edx), %ecx
-    addl    %ecx, %eax
-    mrmovl  4(%edx), %edx
+    mrmovl  (%edx), %ecx    # tmp = ls->val
+    addl    %ecx, %eax      # val += tmp
+    mrmovl  4(%edx), %edx   # ls = ls->next
 test:
-    andl    %edx, %edx
-    jne     loop            # %edx != 0
+    andl    %edx, %edx      # ls == 0?
+    jne     loop            # no -> loop
 return:
     rrmovl  %ebp, %esp      # leave
     popl    %ebp
