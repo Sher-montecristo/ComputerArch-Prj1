@@ -226,7 +226,6 @@ int d_dstM = [
 	D_icode in { IMRMOVL, IPOPL } : D_rA;
 	1 : RNONE;  # Don't write any register
 ];
-
 ## What should be the A value?
 ## Forward into decode stage for valA
 int d_valA = [

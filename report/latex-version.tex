@@ -72,7 +72,7 @@ But there are plenty of optimizations worth exploring in terms of code readabili
         \item Be careful to protect the callee-save register.
         \item Implement function recursion smartly.
 \end{itemize}
-\textbf{Core Techniques}
+\textbf{Core Technique}
 \begin{itemize}
         \item Mimicking C functions, division of functional areas with enough and clear label.
         \item Get the fastest completion speed by coding line by line refering to C language functions
@@ -688,15 +688,80 @@ bool E_bubble =
 	 E_dstM in { d_srcA, d_srcB};
 \end{lstlisting}
 
-
 \subsubsection{Evaluation}
+\begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+        \centering %图片居中
+        \includegraphics[width=0.7\textwidth]{partC-regression-test.png} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{partC regression test} %最终文档中希望显示的图片标题
+        \label{Fig.partC-regression} %用于文内引用的标签
+\end{figure}
+\begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+        \centering %图片居中
+        \includegraphics[width=0.7\textwidth]{partC-test2.png} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{partC benchmark test} %最终文档中希望显示的图片标题
+        \label{Fig.partC-benchmark} %用于文内引用的标签
+\end{figure}
+\begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+        \centering %图片居中
+        \includegraphics[width=0.7\textwidth]{partC-correctness-test.png} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{partC correctness test} %最终文档中希望显示的图片标题
+        \label{Fig.partC-correctness} %用于文内引用的标签
+\end{figure}
+\begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+        \centering %图片居中
+        \includegraphics[width=0.7\textwidth]{partC-CPE-test.png} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{partC CPE test} %最终文档中希望显示的图片标题
+        \label{Fig.partC-CPE} %用于文内引用的标签
+\end{figure}
 
 \section{Conclusion}
-
+In this project, we completed the tasks of three parts, 
+which were gradually developed. The first part made us familiar with y86 assembly syntax, 
+the second part made us familiar with y86 SEQ circuit logic, and the third part encouraged us to transform assembly code and y86 pipeline circuit logic
+The following is a summary of the completion of the three parts:\\
+\textbf{Part A}
+\begin{itemize}
+        \item We write assembly code for three simple functions.
+        \item We take care to protect the stack and registers.
+        \item We focus on the readability and functional equivalence of the code.
+\end{itemize}
+\textbf{Part B}
+\begin{itemize}
+        \item We modify SEQ-full.hcl to add an intruction: iaddl.
+\end{itemize}
+\textbf{Part C}
+\begin{itemize}
+        \item We reorder the instructions to avoid hazards.
+        \item We do 10-way loop unrolling to speed up the while loop.
+        \item We create a binary search tree to find the number of remaining loops at the minimal cost and then completely unroll the loops.
+        \item We modify the HCL file of the pipeline to optimize the branch prediction,  achieving 100\% accuracy for a certain code mode (non-ALU followed by jxx).
+\end{itemize}
 \subsection{Problems}
-
-[In this part you can list the obstacles you met during the project, and better add how you overcome them if you have made it.]
-
+We only meet problems in Part C. They are two unsuccessful attempts to modify the pipeline logic to lift accuracy of branch prediction to 100\%.
+Based on attempt 2, we have made some small changes to achieve the goal, which is explained in detail in \textbf{3.2 achievement}.
+\subsubsection{Attempt 1}
+In this attempt, we look at a particular code distribution, 
+which is t "andl rA, rA $\rightarrow$ JXX"(because in our code, there are a lot of this kind of code distributions). 
+We hope that the branch prediction of JXX under this distribution can reach 100\% accuracy.
+The logic is shown in Figure 11:
+\begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+        \centering %图片居中
+        \includegraphics[width=0.7\textwidth]{partC-attempt1.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{partC attempt1} %最终文档中希望显示的图片标题
+        \label{Fig.partC-correctness} %用于文内引用的标签
+\end{figure}
+Basically, it means that when we detect a JXX after an andl, we will do branch prediction according to the value of the first op of "andl". Because in our ncopy.ys, there are a lot of this
+kind of codes:
+\begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+        \centering %图片居中
+        \includegraphics[width=0.5\textwidth]{partC-loop-demo.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{partC loop} %最终文档中希望显示的图片标题
+        \label{Fig.partC-correctness} %用于文内引用的标签
+\end{figure}
+For "JXX op1, op2, destination".\\
+When $op1 == op2$ , everything is fine, the prediction accuracy will reach 100\%. But we don't check whether $op1 == op2$ in this attempt which will lead to errors for this case.
+When errors happen, we need to stall the pipeline (this is solved by setting D\_Bubble and E\_Bubble correctly) and retrieve the old branch destination address which is unsolvable because this information has been  
+lost in the pipeline when JXX enters its WB stage.
 \subsection{Achievements}
 
 [In this part you can list the strength of your project solution, like the performance improvement, coding readability, partner cooperation and so on. You can also write what you have learned if you like.]
@@ -704,6 +769,5 @@ bool E_bubble =
 
 
 %----------------------------------------------------------------------------------------
-
 
 \end{document}
