@@ -32,17 +32,17 @@
 \section{Introduction}
 \textbf{Part A}
 \\
-In part A, we write three simple assembly programs to mimic three functions in example.c. 
-Based on ensuring correctness，we especially focus on the functional equivalence with the example C functions. 
-By selecting and placing labels in the assembly code appropriately, the code is also very readable.\\
+In part A, we write three simple assembly programs to implement three functions in \texttt{example.c}. 
+Based on ensuring correctness, we especially focus on the functional equivalence with the example C functions. 
+By selecting and placing labels in the assembly code appropriately, the code is also very readable.\\ \\
 \textbf{Part B}
 \\
-In part B, we modify the HCL file of the SEQ to add a new instruction --- iaddl. 
+In part B, we modify the \texttt{HCL} file of the Y86's sequential design to add a new instruction --- \texttt{iaddl}. 
 The following is the roadmap to finish this part:
 \begin{itemize}
-        \item Clarify the computation process of iadd and write it down at the beginning in seq-full.hcl.
-        \item Add any dependence relations of iaddl to all boosigs.
-        \item Design the datapath for iaddl (generate control signals for src and dst)
+        \item Clarify the computation process of \texttt{iadd} and write it down at the beginning in \texttt{seq-full.hcl}.
+        \item Add dependency relations of \texttt{iaddl} to all boolean signals.
+        \item Design the datapath for \texttt{iaddl}, i.e., generate control signals for \texttt{src} and \texttt{dst}
 \end{itemize}
 \textbf{Part C}
 \\
@@ -50,32 +50,39 @@ We achieve full scores in the benchmark testing \textbf{in just 2 hours},
 but we \textbf{spent 2 more days} researching all the potential methods to optimize the performance even further. 
 The following is our roadmap:
 \begin{itemize}
-        \item Change the order of the instruction sequence to avoid data hazard and structure hazards, which leaves $CPE = 12.96$.
-        \item Beyond the changes on instructions order, we use loop unrolling to reduce the number of conditional check and registers updating, which leaves $CPE = 9.83$
-        \item Use a binary search tree to find the precise remaining number of loops after several rounds of unrolling to achieve complete unrolling, which leaves $CPE = 8.95$
-        \item Modify the HCL file to achieve 100\% accuracy in branch prediction for certain code pattern, which brings $CPE$ down to $7.78$.
+        \item Change the order of the instruction sequence to avoid data hazard and structure hazards as much as possible, which leaves $CPE = 12.96$.
+        \item Beyond the changes on instruction order, we apply loop unrolling to reduce the number of conditional check and registers updating, which leaves $CPE = 9.83$.
+        \item Use a binary search tree to find the precise remaining number of elements after several rounds of unrolling to achieve complete unrolling, which leaves $CPE = 8.95$.
+        \item Modify the pipeline design in \texttt{HCL} file to achieve 100\% accuracy in branch prediction for certain code pattern, which brings $CPE$ down to $7.79$.
 \end{itemize}
 \textbf{Contribution}
-\\
-\textbf{Ziqi Zhao} : Part A (coding) \& Part B (coding) \& Part C (coding \& designing) \& project report(reviewing) \\
-\textbf{Yimin Zhao} : Part A (reviewing \& coding) \& Part B (reviewing) \& Part C (designing) \& project report(writing)
+\begin{itemize}
+	\item \textbf{Ziqi Zhao} : Part A (coding) \& Part B (coding) \& Part C (coding \& designing) \& project report (reviewing)
+	\item \textbf{Yimin Zhao} : Part A (reviewing \& coding) \& Part B (reviewing) \& Part C (designing) \& project report (writing)
+\end{itemize}
+\
+\textbf{Special Notes for Testing the Part C}
+\begin{itemize}
+	\item In the Part C, we first achieved full marks by simply adding the \texttt{iaddl} instruction, and in an almost software-only way. The hardware implementation of this approach is in \texttt{pipe/pipe-full.hcl}.
+	\item After that, we made a further exploration and made a modification to the branch prediction part, and finally achieved a CPE of $7.79$. {\color{blue}The hardware implementation of this approach is in \texttt{pipe/pipe-zzcc.hcl}.}
+\end{itemize}
 
 \section{Experiments}
 \subsection{Part A}
 \subsubsection{Analysis}
 In this part, we are asked to implement and simulate three y86 programs. 
-From a macro point of view，this part is relatively easy. 
-But there are plenty of optimizations worth exploring in terms of code readability and elegance.\\
+From a macro point of view, this part is relatively easy. 
+But there are plenty of optimizations worth exploring in terms of code readability and elegance.\\\\
 \textbf{Difficult Point} 
 \begin{itemize}
         \item Always pull the correct element from the stack.
-        \item Be careful to protect the callee-save register.
+        \item Be careful to protect the callee-saved register.
         \item Implement function recursion smartly.
 \end{itemize}
 \textbf{Core Technique}
 \begin{itemize}
         \item Mimicking C functions, division of functional areas with enough and clear label.
-        \item Get the fastest completion speed by coding line by line refering to C language functions
+        \item Get the fastest completion speed by coding line by line refering to C language functions.
         \item Always draw a picture of the stack to ensure the correctness of fetching a variable.
 \end{itemize}
 
@@ -88,56 +95,51 @@ But there are plenty of optimizations worth exploring in terms of code readabili
 # 518030910211 ZiqiZhao
 # 518030910188 YiminZhao
 
-# Set up stack
-        .pos    0
-        irmovl  stack,  %esp
-        rrmovl  %esp,   %ebp
-        pushl   %edx            # save %edx
-        irmovl  ele1,   %eax
-        pushl   %eax
-        call    sum_list
-        popl    %edx            # flatten the stack for ele1
-        popl    %edx            # restore %edx
-        halt
+    .pos    0
+main:
+    irmovl  stack, %esp     # initialize stack
+    rrmovl  %esp, %ebp      # initialize frame
+    irmovl  ele1, %eax
+    pushl   %eax            # argument
+    call    sum_list
+    halt
 
 # Sample linked list 
 .align 4
 ele1:
-        .long   0x00a
-        .long   ele2
+    .long   0x00c
+    .long   ele2
 ele2:
-        .long   0x0b0
-        .long   ele3
+    .long   0x0b0
+    .long   ele3
 ele3:
-        .long   0xc00
-        .long   0
+    .long   0xc00
+    .long   0
 
 # sum_list func
 sum_list:
-        pushl   %ebp            # enter
-        pushl   %ecx            # save %ecx
-        rrmovl  %esp,   %ebp
-        xorl    %eax,   %eax    # clear %eax
-        mrmovl  12(%ebp),%edx   # get ls
-        jmp     test
+    pushl   %ebp            # enter
+    rrmovl  %esp, %ebp
+    xorl    %eax, %eax      # clear %eax
+    mrmovl  8(%ebp), %edx   # %edx = ls
+    jmp     test
 loop:
-        mrmovl  (%edx), %ecx
-        addl    %ecx,   %eax
-        mrmovl  4(%edx),%edx
+    mrmovl  (%edx), %ecx    # tmp = ls->val
+    addl    %ecx, %eax      # val += tmp
+    mrmovl  4(%edx), %edx   # ls = ls->next
 test:
-        andl    %edx,   %edx
-        jne     loop            # %edx != 0
+    andl    %edx, %edx      # ls == 0?
+    jne     loop            # no -> loop
 return:
-        rrmovl  %ebp,   %esp    # leave
-        popl    %ecx
-        popl    %ebp
-        ret
+    rrmovl  %ebp, %esp      # leave
+    popl    %ebp
+    ret
+
 
 # Stack 
-        .pos    0x400
+    .pos    0x400
 stack:
 \end{lstlisting}
-\pagebreak
 \begin{center}
         \textbf{rsum.ys}
 \end{center}
@@ -149,12 +151,9 @@ stack:
     .pos    0
     irmovl  stack, %esp
     rrmovl  %esp, %ebp
-    pushl   %edx
     irmovl  ele1, %eax
     pushl   %eax
     call    rsum_list
-    popl    %edx           # eat ele1
-    popl    %edx           # restore %edx
     halt
 
 # Sample linked list 
@@ -173,20 +172,20 @@ ele3:
 rsum_list:
     pushl   %ebp            # enter
     rrmovl  %esp, %ebp
-    xorl    %eax, %eax
-    mrmovl  8(%ebp), %edx   # get ls
-    andl    %edx, %edx
-    je      return          # ls == NULL
-do:
     pushl   %ebx            # save %ebx
+    xorl    %eax, %eax      # clear eax
+    mrmovl  8(%ebp), %edx   # get ls
+    andl    %edx, %edx      # ls == NULL?
+    je      return          # yes -> return
+do:
     mrmovl  (%edx), %ebx    # mov ls->val to %ebx
     mrmovl  4(%edx), %eax
     pushl   %eax            # push ls->next
     call    rsum_list
     addl    %ebx, %eax      # ret = val + ret
     popl    %edx            # eat para
-    popl    %ebx            # restore %ebx
 return:
+    popl    %ebx            # restore %ebx
     rrmovl  %ebp, %esp      # leave
     popl    %ebp
     ret
@@ -201,63 +200,64 @@ stack:
 \end{center}
 \begin{lstlisting}
 # 518030910211 ZiqiZhao
-# 518030910188 Yimin Zhao
+# 518030910188 YiminZhao
 
 # Set up stack
     .pos    0
     irmovl  stack, %esp
     rrmovl  %esp, %ebp
-    irmovl  $3, %eax
+    irmovl  $3, %eax        # len
     pushl   %eax
-    irmovl  src, %eax
+    irmovl  dest, %eax      # dest
     pushl   %eax
-    irmovl  dest, %eax
+    irmovl  src, %eax       # src
     pushl   %eax
     call    copy_block
     halt
+
 .align 4
 # Source block
 src:
     .long 0x00a
     .long 0x0b0
     .long 0xc00
+    .long 0x888             # Should not copy this
 
 # Destination block
 dest:
     .long 0x111
     .long 0x222
     .long 0x333
+    .long 0x999             # Should not write this
 
 copy_block:
-    pushl   %ebp
+    pushl   %ebp            # enter
     rrmovl  %esp, %ebp
-    pushl   %ecx
-    pushl   %edx
-    pushl   %edi
-    irmovl  $0, %eax         # %eax = result = 0
-    mrmovl  16(%ebp), %ecx   # %ecx = len
-    mrmovl  12(%ebp), %edx   # %edx = src
-    mrmovl  8(%ebp), %edi    # %edi = dest
-    jmp     while_loop
-
-while_loop:
-    andl    %ecx, %ecx       # check if %ecx == 0?
-    jle     return           # if so, jump to "return"
-    mrmovl  (%edx), %esi     # %esi = val = *src
-    irmovl  $4, %ebx         # %ebx = 4
-    addl    %ebx, %edx       # src++
-    rmmovl  %esi, (%edi)     # *dest = val
-    addl    %ebx, %edi       # dest++
-    xorl    %esi, %eax
-    irmovl  $-1, %ebx
-    addl    %ebx, %ecx       # len--
-    jmp     while_loop
-
+    pushl   %ebx            # save %ebx -> len
+    pushl   %edi            # save %edi -> immediate
+    pushl   %esi            # save %esi -> val
+    xorl    %eax, %eax      # %eax = result = 0
+    mrmovl  16(%ebp), %ebx  # %ebx = len
+    mrmovl  12(%ebp), %edx  # %edx = dest
+    mrmovl  8(%ebp), %ecx   # %ecx = src
+    jmp     test
+loop:
+    irmovl  $4, %edi        # %edi = 4
+    mrmovl  (%ecx), %esi    # val = *src
+    addl    %edi, %ecx      # src += 1
+    rmmovl  %esi, (%edx)    # *dest = val
+    addl    %edi, %edx      # val += 1
+    xorl    %esi, %eax      # result ^= val
+    irmovl  $-1, %edi       # %edx = -1
+    addl    %edi, %ebx      # len -= 1
+test:
+    andl    %ebx, %ebx      # len > 0?
+    jg      loop            # yes -> loop
 return:
+    popl    %esi            # restore registers
     popl    %edi
-    popl    %edx
-    popl    %ecx
-    rrmovl  %ebp, %esp
+    popl    %ebx
+    rrmovl  %ebp, %esp      # leave
     popl    %ebp
     ret
 # Stack 
@@ -270,61 +270,59 @@ stack:
 
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
-        \includegraphics[width=0.7\textwidth]{partA-sum.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{partA-sum.ys} %最终文档中希望显示的图片标题
+        \includegraphics[width=0.7\textwidth]{partA-sum-bz.png} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{partA/sum.ys} %最终文档中希望显示的图片标题
         \label{Fig.partA-sum} %用于文内引用的标签
 \end{figure}
 \begin{itemize}
-        \item The \%eax register has the correct value which is the return value of the function---$0xcba$.
-        \item The memory is not corrupted since all the modifications locate at the stack whose starting addresss is set to be $0x400$.
+        \item The \texttt{\%eax} register has the correct value which is the return value of the function --- \texttt{0xcba}.
+        \item The memory is not corrupted since all the modifications locate at the stack whose starting addresss is set to be \texttt{0x400}.
 \end{itemize}
 \textbf{rsum.ys}\\
 
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
-        \includegraphics[width=0.7\textwidth]{partA-rsum.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{partA-rsum.ys} %最终文档中希望显示的图片标题
+        \includegraphics[width=0.7\textwidth]{partA-rsum-bz.png} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{partA/rsum.ys} %最终文档中希望显示的图片标题
         \label{Fig.partA-rsum} %用于文内引用的标签
 \end{figure}
 
 \begin{itemize}
-        \item The \%eax register has the correct value which is the return value of the function---$0xcba$.
-        \item The memory is not corrupted since all the modifications locate at the stack whose starting addresss is set to be $0x400$.
+        \item The \texttt{\%eax} register has the correct value which is the return value of the function --- \texttt{0xcba}.
+        \item The memory is not corrupted since all the modifications locate at the stack whose starting addresss is set to be \texttt{0x400}.
 \end{itemize}
 
 \textbf{copy.ys}\\
 
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
-        \includegraphics[width=0.7\textwidth]{partA-copy.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{partA-copy.ys} %最终文档中希望显示的图片标题
+        \includegraphics[width=0.7\textwidth]{partA-copy-bz.png} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{partA/copy.ys} %最终文档中希望显示的图片标题
         \label{Fig.partA-copy} %用于文内引用的标签
 \end{figure}
 
 \begin{itemize}
-        \item The \%eax register has the correct value which is the return value of the function---$0xcba$.
-        \item Values are written into the memory correctly as shown in the first three rows in the "Changes to memory" part in Figure 3
-        \item The memory is not corrupted since all the modifications other than 3 source values locate at the stack whose starting addresss is set to be $0x400$.
+        \item The \texttt{\%eax} register has the correct value which is the return value of the function --- \texttt{0xcba}.
+        \item Values are written into the memory correctly as shown in the first three rows in the "Changes to memory" part in Figure 3.
+        \item The memory is not corrupted since all the modifications other than \texttt{dest} locate at the stack whose starting addresss is set to be \texttt{0x400}.
 \end{itemize}
 
 \subsection{Part B}
 
 \subsubsection{Analysis}
-In part B, we are asked to extend the SEQ processor to support instruction "iaddl" by modifying SEQ-full.hcl.
-Once we understand the processing logic and HCL syntax of the y86 seq processor, the problem becomes very simple.
-We can do it in five minutes because all we need to do is change the followings in the HCL
+In part B, we are asked to extend the SEQ processor to support instruction \texttt{iaddl} by modifying \texttt{SEQ-full.hcl}.
+The task is not so difficult once we understand the processing logic and the syntax of \texttt{HCL}, and all we need to do is change the followings in \texttt{seq-full.hcl}:
 \begin{itemize}
-        \item Add "IIADDL" in the choices region of (bool) instr\_valid since iaddl is a valid instruction.
-        \item Add "IIADDL" in the choices region of (bool) need\_regid since iaddl operation involves one register.
-        \item Add "IIADDL" in the choices region of (bool) need\_valC since iaddl operation involves one constend(represented by valC in the circult of y86 SEQ).
-        \item Add "IIADDL" in the choices region of (bool) set\_cc since iaddl operation involves ALU operation which will set flags.
-        \item When icode is IIADDL, alufun will be ALUADD since the operation is "adding" the constand to rB.
-        \item When icode is IIADDL, srcB is from rB since the second operand of iaddl is a register.
-        \item When icode is IIADDL, dstE (where the result from ALU is passed towards) is rB since "iaddl constant, rB" means rB += constant (rB is updated). 
-        \item When icode is IIADDL, aluA (the first op) is valC (the constant in the instruction) since "iaddl constant, rB" means the first op is the constant (valC).
-        \item When icode is IIADDL, aluB (the second op) is valB (the value of the second register that is read) for the same reason above.
+        \item Add \texttt{IIADDL} in the choices region of \texttt{(bool) instr\_valid} since \texttt{iaddl} is a valid instruction.
+        \item Add \texttt{IIADDL} in the choices region of \texttt{(bool) need\_regid} since \texttt{iaddl} operation involves one register.
+        \item Add \texttt{IIADDL} in the choices region of \texttt{(bool) need\_valC} since \texttt{iaddl} operation involves one constant (represented by \texttt{valC} in the circult of Y86 SEQ).
+        \item Add \texttt{IIADDL} in the choices region of \texttt{(bool) set\_cc} since \texttt{iaddl} operation involves ALU operation which will set flags.
+        \item When icode is \texttt{IIADDL}, \texttt{alufun} will be \texttt{ALUADD} since the operation is "adding" the constant to \texttt{rB}.
+        \item When icode is \texttt{IIADDL}, \texttt{srcB} is from \texttt{rB} since the second operand of \texttt{iaddl} is a register.
+        \item When icode is \texttt{IIADDL}, \texttt{dstE} (where the result from ALU is passed towards) is \texttt{rB} since "\texttt{iaddl constant, rB}" means \texttt{rB += constant} (\texttt{rB} is updated). 
+        \item When icode is \texttt{IIADDL}, \texttt{aluA} (the first op) is \texttt{valC} (the constant in the instruction) since "\texttt{iaddl constant, rB}" means the first op is the constant (\texttt{valC}).
+        \item When icode is \texttt{IIADDL}, \texttt{aluB} (the second op) is \texttt{valB} (the value of the second register that is read) for the same reason above.
 \end{itemize}
-[In this part, you should give an overall analysis for the task, like difficult point, core technique and so on.]
 
 \subsubsection{Code}
 \begin{center}
@@ -333,7 +331,7 @@ We can do it in five minutes because all we need to do is change the followings 
 \begin{lstlisting}
 --------------------------------------------------------------------
 bool instr_valid = icode in 
-{ INOP, IHALT, IRRMOVL, IIRMOVL, IRMMOVL, IMRMOVL,
+     { INOP, IHALT, IRRMOVL, IIRMOVL, IRMMOVL, IMRMOVL,
        IOPL, IJXX, ICALL, IRET, IPUSHL, IPOPL, IIADDL };
 --------------------------------------------------------------------
 # Does fetched instruction require a regid byte?
@@ -404,27 +402,29 @@ bool set_cc = icode in { IOPL, IIADDL };
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
         \includegraphics[width=0.6\textwidth]{partB-test-iaddl.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{part B iaddl test} %最终文档中希望显示的图片标题
+        \caption{part B \texttt{iaddl} test} %最终文档中希望显示的图片标题
         \label{Fig.partB-iaddl} %用于文内引用的标签
 \end{figure}
 \subsection{Part C}
 \subsubsection{Analysis}
-In this part, we were asked to speed up the program ncopy.ys 
-as much as possible by modifying the ncopy.ys and HCL.
+In this part, we were asked to speed up the program \texttt{ncopy.ys} as much as possible by modifying the \texttt{ncopy.ys} and \texttt{HCL}.
 The following is our roadmap:\\
 \\
-\textbf{Avoid Load and Use: CPI $\rightarrow$ 12.96} \\
-For the pipeline design in CS:APP 2e, "load and use" or "mrmovl" then "rmmovl" will cause penalty,
+\textbf{Added \texttt{iaddl} instruction to \texttt{pipe-full.hcl} }\\
+Like what we have done in Part B, we added \texttt{iaddl} to the pipeline design. It avoided the overhead of using registers to store constants, and also increased the number of registers we could use, which paved the way for our further optimization.\\
+\\
+\textbf{Avoid Load and Use: CPE $\rightarrow$ 12.96} \\
+For the pipeline design in CS:APP 2e, "load and use" or \texttt{mrmovl} then \texttt{rmmovl} will cause penalty,
 which must be avoided to improve the performance. On the one hand, we rearranged the order of 
 instructions to avoid stalling as much as possible. On the other hand, we use two registers to store 
-the variable "val" , loading them separately and ahead of time.\\
+the variable \texttt{val}, loading them separately and ahead of time.\\
 \\
-\textbf{10-way Loop Unrolling:  CPI $\rightarrow$ 9.83} \\
+\textbf{10-way Loop Unrolling:  CPE $\rightarrow$ 9.83} \\
 There's much overhead in testing and updating procedure of loops, and one way to minimize it is to 
 perform a technique named "loop unrolling". That is, we do multiple loops and update the relevant 
-data at once, to reduce the number of times we execute the 'add' and 'jxx' instructions. \\
+data at once, to reduce the number of times we execute the \texttt{add} and \texttt{jxx} instructions. \\
 \\
-\textbf{Search Tree for Remaining Elements:  CPI $\rightarrow$ 8.95} \\
+\textbf{Search Tree for Remaining Elements:  CPE $\rightarrow$ 8.95} \\
 For large inputs, the more ways we unroll the loops, the better the program performs. However, for 
 small inputs, it is important to choose a good method to process the remaining elements. The simplest 
 way is to write another loop for them, but a much better way is to totally unroll the code, that is, 
@@ -433,29 +433,42 @@ jump instruction, we designed a search tree to get the correct jump destination 
 \\
 \\
 --------------------------------------------------------------------------------------------------------\\
-The above optimization took us two hours, so far we have reached full marks
-But \textbf{can it be even faster} ?
-We spent another two days poring over the implementation logic and HCL and other files of the y86 pipeline. 
-And it finally gets us here:\\
+The above optimization took us two hours, so far we have reached full marks.\\
+\textbf{But can it be even faster?}
+We spent another two days poring over the implementation logic in \texttt{HCL} and other files of the Y86 pipeline design. And it finally got us here:\\
 --------------------------------------------------------------------------------------------------------\\
 \\
-\textbf{Optimized for Our Branch Prediction Design: CPI $\rightarrow$ 7.78} \\
-For this program, a significant performance factor is the branch prediction failure for count++. In 
-"pipe-zzcc.hcl", we made a special optimization for the situation like this:\\
+{\color{red}\textbf{Optimized for Our Branch Prediction Design: CPE $\rightarrow$ 7.79}} \\
+For this program, a significant performance factor is the branch prediction failure for \texttt{count++}.
+In \texttt{pipe-zzcc.hcl}, we made a special optimization for the situation like this:\\
 \begin{tabular}{|c|c|c|c|}
-        \hline Instruction:&any instruction&non-alu instruction&jxx\\
-        \hline Stages:&EX&ID&IF\\
+        \hline Instruction&any instruction&non-alu instruction&\texttt{jxx}\\
+        \hline Stages&EX&ID&IF\\
         \hline
 \end{tabular}
 \\
 Note that in this case, we can forward the conditions from EX stage to IF and predict the branch with 100\% accuracy. 
 Thus, we optimized the program to ensure that there were as many of these patterns as 
-possible and took much advantage of it, which leads to an average CPE of 7.78.
+possible and took much advantage of it, which leads to an average CPE of 7.79.
 \subsubsection{Code}
 \begin{center}
         \textbf{-----10-Way Loop Unrolling-----}\\
 \end{center}
 \begin{lstlisting}
+##################################################################
+# Do not modify this portion
+# Function prologue.
+ncopy:	pushl %ebp		# Save old frame pointer
+	rrmovl %esp,%ebp	# Set up new frame pointer
+	pushl %esi		# Save callee-save regs
+	pushl %ebx
+	pushl %edi
+	mrmovl 8(%ebp),%ebx	# src
+	mrmovl 16(%ebp),%edx	# len
+	mrmovl 12(%ebp),%ecx	# dst
+
+##################################################################
+# You can modify this portion
 # Entry
 	iaddl $-9, %edx		# len -= 9, i.e., initial_len <= 9?
 	irmovl $0, %eax		# count = 0
@@ -624,12 +637,33 @@ Rem1b:
         iaddl $1, %eax		# count++
         
 \end{lstlisting}
-
+\pagebreak
 \begin{center}
-        \textbf{-----Modification to hcl (all in pipe-zzcc.hcl)-----}\\
+        \textbf{-----Modification to \texttt{hcl} (all in \texttt{pipe-zzcc.hcl})-----}\\
+        Note: we have omitted the changes for adding \texttt{iaddl}, \\which is similar to those in \texttt{../seq/seq-full.hcl}
 \end{center}
 \begin{lstlisting} 
----------------------add following definition-----------------------
+# 1. Added instruction `iaddl`
+#   Similar to the changes in `../seq/full.hcl`.
+#
+# 2. Optimization on branch prediction
+#   a. For unconditional JMP, there's no need to insert any bubble.
+#
+#   b. A significant performance factor is the branch prediction failure for count++. In our design, we made
+#     a special optimization for the situation like this:
+#         Instruction:   any    non-alu    jxx
+#         Stage:         EX       ID       IF
+#      Note that in this case, we can forward the conditions from EX stage to IF and predict the branch with
+#     100% accuracy. Thus, we optimized the program to ensure that there were as many of these patterns as
+#     possible and took much advantage of it, which leads to an average CPE of 7.79.
+#
+#      Specifically, we have modified the following logic:
+#     - Added some additional definitions around line 150;
+#     - Modified SelectPC logic around line 180;
+#     - Modified PredictPC logic around line 230;
+#     - Modified pipeline bubble logic around line 400 and 410.
+
+---------------------Added following definition-----------------------
 quote 'int gen_aluA();'			# Declaration of gen_aluA
 quote 'int gen_aluB();'			# Declaration of gen_aluB
 
@@ -637,18 +671,35 @@ quote 'int gen_aluB();'			# Declaration of gen_aluB
 # Note that the simulator do not generate `cc_in` correctly
 boolsig f_cnd_alu 
         'cond_holds(compute_cc(id_ex_curr->ifun, 
-                        gen_aluA(), gen_aluB()), 
-                        if_id_next->ifun)'
+                    gen_aluA(), gen_aluB()), 
+                    if_id_next->ifun)'
 
 # For JXX in ID and non-ALU in EX, check the cc register
 boolsig f_cnd_other 'cond_holds(cc, if_id_next->ifun)'
--------------------------modify f_predPC----------------------------
+
+---------------------------Modified f_PC------------------------------
+## What address should instruction be fetched at
+int f_pc = [
+	# Unconditional jump: Use predicted value of PC
+	M_icode == IJXX && M_ifun == UNCOND : F_predPC;
+
+	# Mispredicted taken. Fetch at incremented PC (previously valP)
+	M_icode == IJXX && (W_icode in {IOPL, IIADDL}) && !M_Cnd : M_valA;
+
+	# Completion of RET instruction.
+	W_icode == IRET : W_valM;
+
+	# Default: Use predicted value of PC
+	1 : F_predPC;
+];
+
+-------------------------Modified f_predPC----------------------------
 # Predict next value of PC
 int f_predPC = [
 	f_icode == ICALL : f_valC;
 	f_icode == IJXX && f_ifun == UNCOND : f_valC;
 
-	# Decode stage is ALU and will set CC -> always taken by default
+	# Decode stage is ALU and will set CC->always taken by default
 	f_icode == IJXX && (D_icode in {IOPL, IIADDL}): f_valC;
 
 	# Decode stage is not ALU
@@ -659,13 +710,15 @@ int f_predPC = [
 	 # Execute stage is not ALU -> check cc -> ZF SF OF
         f_icode == IJXX && !(E_icode in {IOPL, IIADDL}) && 
         !f_cnd_other : f_valP;
+        
         # Other JXX
 	f_icode == IJXX : f_valC;
 
 	# Otherwise
 	1 : f_valP;
 ];
----------------add conditions to D_Bubble & E_BUbble----------------
+
+---------------Added conditions to D_Bubble & E_BUbble----------------
 bool D_bubble =
 	# Mispredicted branch taken
         (E_icode == IJXX && E_ifun != UNCOND && 
@@ -676,9 +729,7 @@ bool D_bubble =
         && E_dstM in { d_srcA, d_srcB }) 
         && IRET in { D_icode, E_icode, M_icode };
 
-# Should I stall or inject a bubble into Pipeline Register E?
-# At most one of these can be true.
-bool E_stall = 0;
+
 bool E_bubble =
 	# Mispredicted branch taken
         (E_icode == IJXX && E_ifun != UNCOND && 
@@ -691,7 +742,7 @@ bool E_bubble =
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
         \includegraphics[width=0.7\textwidth]{partC-regression-test.png} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{partC regression test} %最终文档中希望显示的图片标题
+        \caption{partC regression test (with \texttt{iaddl} included)} %最终文档中希望显示的图片标题
         \label{Fig.partC-regression} %用于文内引用的标签
 \end{figure}
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
@@ -713,9 +764,7 @@ bool E_bubble =
         \label{Fig.partC-CPE} %用于文内引用的标签
 \end{figure}
 \section{Conclusion}
-In this project, we completed the tasks of three parts, 
-which were gradually developed. The first part made us familiar with y86 assembly syntax, 
-the second part made us familiar with y86 SEQ circuit logic, and the third part encouraged us to transform assembly code and y86 pipeline circuit logic
+In this project, we completed the tasks of three parts, which were gradually developed. The first part made us familiar with Y86 assembly syntax, while the second part made us familiar with Y86 SEQ circuit logic, and the third part encouraged us to transform assembly code and Y86 pipeline design.
 The following is a summary of the completion of the three parts:\\
 \textbf{Part A}
 \begin{itemize}
@@ -725,66 +774,90 @@ The following is a summary of the completion of the three parts:\\
 \end{itemize}
 \textbf{Part B}
 \begin{itemize}
-        \item We modify SEQ-full.hcl to add an intruction: iaddl.
+        \item We modify \texttt{SEQ-full.hcl} to add an intruction: \texttt{iaddl}.
 \end{itemize}
 \textbf{Part C}
 \begin{itemize}
         \item We reorder the instructions to avoid hazards.
-        \item We do 10-way loop unrolling to speed up the while loop.
-        \item We create a binary search tree to find the number of remaining loops at the minimal cost and then completely unroll the loops.
-        \item We modify the HCL file of the pipeline to optimize the branch prediction,  achieving 100\% accuracy for a certain code mode (non-ALU followed by jxx).
+        \item We do 10-way loop unrolling to speed up the \texttt{while} loop.
+        \item We create a search tree to find the number of remaining loops at the minimal cost and then completely unroll the operations for remaining elements.
+        \item We modify the \texttt{HCL} file of the pipeline to optimize the branch prediction,  achieving 100\% accuracy for a certain pattern (non-ALU followed by \texttt{jxx}).
 \end{itemize}
 \subsection{Problems}
-We only meet problems in Part C. They are two unsuccessful attempts to modify the pipeline logic to lift accuracy of branch prediction to 100\%.
-Based on attempt 2, we have made some small changes to achieve the goal, which is explained in detail in \textbf{3.2 achievement}.
+We've only had some tricky problems in Part C. They are two unsuccessful attempts to modify the pipeline logic to lift the accuracy of branch prediction.
+Based on attempt 2, however, we have made some small changes to achieve the goal, which is explained in detail in \textbf{3.2 Achievements}.
 \subsubsection{Attempt 1}
 In this attempt, we look at a particular code distribution, 
-which is "andl op1, op2 $\rightarrow$ JXX des"(because in our code, there are a lot of this kind of code distributions). 
-We hope that the branch prediction of JXX under this distribution can reach 100\% accuracy.
-The logic is shown in Figure 11:
+which is "\texttt{andl op1, op2} $\rightarrow$ \texttt{jxx dest}". 
+We hope that the branch prediction of \texttt{jxx} under this distribution can reach 100\% accuracy.
+
+The logic is shown in Figure \ref{Fig.partC-attempt1}:
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
         \includegraphics[width=0.7\textwidth]{partC-attempt1.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{partC attempt1} %最终文档中希望显示的图片标题
-        \label{Fig.partC-correctness} %用于文内引用的标签
+        \caption{Part C Attempt 1} %最终文档中希望显示的图片标题
+        \label{Fig.partC-attempt1} %用于文内引用的标签
 \end{figure}
-Basically, it means that when we detect a JXX after an andl, 
-we will do branch prediction according to the value of the first op of "andl". 
-Because in our ncopy.ys, there are a lot of this kind of codes:
+Our initial plan is that, when we detect a \texttt{jxx} after an \texttt{andl}, 
+we will do branch prediction according to the value of the first operand of \texttt{andl}. 
+Since in our \texttt{ncopy.ys}, there are a lot of this code patterns:
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
-        \includegraphics[width=0.5\textwidth]{partC-loop-demo.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
-        \caption{partC loop} %最终文档中希望显示的图片标题
-        \label{Fig.partC-correctness} %用于文内引用的标签
+        \includegraphics[width=0.6\textwidth]{partC-loop-demo.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{Part C Loop 1} %最终文档中希望显示的图片标题
+        \label{Fig.partC-at1-loop} %用于文内引用的标签
 \end{figure}
-For "andl op1, op2$\rightarrow$ JXX des".\\
-When $op1 == op2$ , everything is fine, the prediction accuracy will reach 100\%. 
-But we don't check whether $op1 == op2$ in this attempt which will lead to errors for this case.
-When errors happen, we need to stall the pipeline (this is solved by setting D\_Bubble and E\_Bubble correctly) 
-and retrieve the old branch destination address which is unsolvable because this information has been  
-lost in the pipeline when JXX enters its WB stage.
+Let's take a closer look at "\texttt{andl op1, op2} $\rightarrow$ \texttt{jxx dest}".
+
+When \texttt{op1 == op2}, i.e., \texttt{rA == rB}, the sign of \texttt{op1} is exactly the sign of \texttt{op1 \& op2}, then we can compare the current conditional jump instruction type with the sign of \texttt{op1} to achieve a 100\% accuracy. 
+
+But if \texttt{op1 != op2}, our prediction will not always succeed, which requires a restore from mispredicted branch, that is, we must find out an approach to determine whether we have mispredicted when the \texttt{jxx} is in MEM stage. However, this is unsolvable since the this information of two register sources has been lost in the pipeline when \texttt{andl} has entered its WB stage.
 \subsubsection{Attempt 2}
-In this attempt, we still look at a particular code distribution,
-which is 
+In this attempt, we look at another code pattern, which is "\texttt{any instruction} $\rightarrow$ \texttt{non-alu instruction} $\rightarrow$ \texttt{jxx dest}", just like the following:
+\begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+        \centering %图片居中
+        \includegraphics[width=0.7\textwidth]{partC-attempt2.png} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{Part C Attempt 2} %最终文档中希望显示的图片标题
+        \label{Fig.partC-attempt2} %用于文内引用的标签
+\end{figure}
+Since the last instruction of \texttt{jxx} is a non-alu instruction, we are able to get the correct conditional flag when \texttt{jxx} is stll in the Fetch stage. 
+
+Specifically, if the instruction in Execute stage now is a non-alu one, then the current value of \texttt{CC} register will be the correct one for \texttt{jxx}. If the instruction in Execute stage now is an alu one, the the condition flags generated by ALU, i.e. in \texttt{cc\_in}, will be the correct one. 
+
+\textbf{We have ensured that if a non-alu instruction is followed by a \texttt{jxx}, the prediction must be correct.} Thus, when we are processing with the logic of restoring form misprediction, we only need to focus on the case where the previous instruction of \texttt{jxx} is an alu instruction. According to this, we avoid the problems we encountered in our first attempt, since it is really easy to get the \texttt{ifun} field and decide the type of an instruction in Write-back stage.
+
+However, when we finished the implementation in \texttt{HCL} file, \textbf{a strange problem arose}. The simulator using this branch prediction approach can pass all the ISA tests provided, but yielded a large number of "bad count" in \texttt{ncopy.ys}. 
+
+It took us about six hours to troubleshoot the problem and finally pin down the cause of the problem into two signals in the pipeline simulator: \textbf{\texttt{cc\_in} and \texttt{e\_valE}}. Please refer to the next section on how we finally solved this problem.
 \subsection{Achievements}
-\subsubsection{Attemp 3 Eventually Succeed}
+\subsubsection{A Successful Attempt 3}
+For the "bad count" problems, we explored for a long time and finally realized that when we predicted the branch, \textbf{the simulator may not generate the correct ALU output values}, say, \texttt{e\_valE} and \texttt{cc\_in}. After a talk with Chi Zhang, we adopted a compromise method, that is, manually call the C function in the simulator program to generate a correct ALU output, and take this as the basis of prediction. It finally succeeded and leaded to a CPE of $7.79$.
+
+\begin{lstlisting}
+# For JXX in ID and ALU in EX, check the cc generated by ALU
+# Note that the simulator do not generate `cc_in` correctly
+boolsig f_cnd_alu 
+        'cond_holds(compute_cc(id_ex_curr->ifun, 
+                    gen_aluA(), gen_aluB()), 
+                    if_id_next->ifun)'
+\end{lstlisting}
+
+In this case, we seem to predict the branch by doing complex operations in the Fetch stage, which also seems unreasonable in real pipelined processor design. However, according to the characteristics of the logic circuit, all signals in the circuit must be able to reach steady state in one clock cycle, so the output of ALU must be correct. \textbf{We don't need to add any additional complex hardware in the Fetch stage to perform such a prediction policy. We just need a simple unit instead to compare the \texttt{ifun} of the current \texttt{jxx} instruction with the three flags of \texttt{zf}, \texttt{sf} and \texttt{of} in \texttt{cc} or \texttt{cc\_in}}, which is similar to the technique named "delayed slot" and is a fairly practical design in fact. 
 
 \subsubsection{Performance Improvement}
 By modifying the pipeline logic, we managed to accelerate the program to a very surprising degree:
 $$
-        CPE = 12.98 \rightarrow CPE = 9.83 \rightarrow CPE = 8.95 \rightarrow CPE = 7.78
+        CPE = 12.98 \rightarrow CPE = 9.83 \rightarrow CPE = 8.95 \rightarrow CPE = 7.79
 $$
-We even try to unlimit the number of the array size. By modifying benchmark.pl, 
-we push the upper bound to be 400 to test the best performance of our implementation (see in Figure 13).
+We even try to unlimit the number of the array size. By modifying \texttt{benchmark.pl}, 
+we push the upper bound to be 400 to test the best performance of our implementation (see Figure \ref{Fig.partC-limit}).
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
         \includegraphics[width=0.4\textwidth]{partC-larger-scale-test.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
         \caption{partC larger scale test} %最终文档中希望显示的图片标题
-        \label{Fig.partC-correctness} %用于文内引用的标签
+        \label{Fig.partC-limit} %用于文内引用的标签
 \end{figure}
-From analysis, we could safely estimate that the theoretical minimum $CPE$ should be around $5.0$. \\
-\\
-\textbf{So it's almost certain that the optimizations we've done under the existing ISA framework are close to extreme.}
+From analysis, we could safely estimate that the theoretical minimum CPE should be around $4.5$ to $5.0$. \textbf{So it's almost certain that the optimizations we've done under the existing ISA framework are close to extreme.}
 \subsubsection{Code readability}
 We put a lot of effort into the readability of the code for parts A.
 \begin{itemize}
@@ -792,17 +865,18 @@ We put a lot of effort into the readability of the code for parts A.
         \item For various registers, we always annotate its purpose with comments
         \item For code that's not so obvious, we always leave the comment showing its counterpart in the C function next to it.
 \end{itemize}
-We have also left understandable and sufficient comments in the header of the modified files in partB and partC, 
-please open ncopy.ys, pipe-zzcc.hcl, SEQ-full.hcl to read
+We have also left understandable and sufficient comments in the header of the modified files in Part B and Part C. Please refer to \texttt{ncopy.ys}, \texttt{pipe-full.hcl}, \texttt{pipe-zzcc.hcl}, and \texttt{seq-full.hcl}.
 
 \subsection{Feelings}
-This is a very interesting and valuable project. Ziqi and I work together perfectly. 
-When Ziqi achieved full score for partC in two hours, we started thinking about whether we could get CPE down to the limit of 5.
+This is a very interesting and valuable project, and we have worked together perfectly. 
+When Ziqi achieved full score for Part C in two hours, we started thinking about whether we could get CPE down to the limitation.
 We ended up spending two days talking, drawing, and writing code to test.
-But what was so exciting was that after two big failures, we finally got there in a very "weird" way.
-It should be noted, however, that there is an inherent problem with the simulator for the pipeline processor, 
-otherwise our attempt 2 should have been successful and would not have required special means to implement it.
-This project allowed us to reap the valuable sense of accomplishment brought by not giving up. 
-We are also very grateful to have been able to take this course and to be introduced to such a valuable project.
+But the most exciting thing was that after two big failures, we finally got there in a very "weird" way.
+It should be noted, however, that there is an inherent problem with the simulator for the pipeline processor. 
+Otherwise our second attempt should have been successful and would not have required special means to implement it in the third attempt.
+
+This project allowed us to reap the valuable sense of accomplishment brought by not giving up. We are also very grateful to have been able to take this course and to be introduced to such a valuable project.
+
+Finally, we would like to specially thank Miss Shen and the TAs for their instruction and support, so that we can successfully complete this project.
 %----------------------------------------------------------------------------------------
 \end{document}
