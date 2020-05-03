@@ -5,59 +5,60 @@
   0x000:              |     .pos    0
   0x000: 30f400040000 |     irmovl  stack, %esp
   0x006: 2045         |     rrmovl  %esp, %ebp
-  0x008: 30f003000000 |     irmovl  $3, %eax
+  0x008: 30f000000000 |     irmovl  $0, %eax        # len
   0x00e: a00f         |     pushl   %eax
-  0x010: 30f028000000 |     irmovl  src, %eax
+  0x010: 30f038000000 |     irmovl  dest, %eax      # dest
   0x016: a00f         |     pushl   %eax
-  0x018: 30f034000000 |     irmovl  dest, %eax
+  0x018: 30f028000000 |     irmovl  src, %eax       # src
   0x01e: a00f         |     pushl   %eax
-  0x020: 8040000000   |     call    copy_block
+  0x020: 8048000000   |     call    copy_block
   0x025: 00           |     halt
+                      | 
   0x028:              | .align 4
                       | # Source block
   0x028:              | src:
   0x028: 0a000000     |     .long 0x00a
   0x02c: b0000000     |     .long 0x0b0
   0x030: 000c0000     |     .long 0xc00
+  0x034: 88080000     |     .long 0x888             # Should not copy this
                       | 
                       | # Destination block
-  0x034:              | dest:
-  0x034: 11010000     |     .long 0x111
-  0x038: 22020000     |     .long 0x222
-  0x03c: 33030000     |     .long 0x333
+  0x038:              | dest:
+  0x038: 11010000     |     .long 0x111
+  0x03c: 22020000     |     .long 0x222
+  0x040: 33030000     |     .long 0x333
+  0x044: 99090000     |     .long 0x999             # Should not write this
                       | 
-  0x040:              | copy_block:
-  0x040: a05f         |     pushl   %ebp
-  0x042: 2045         |     rrmovl  %esp, %ebp
-  0x044: a01f         |     pushl   %ecx
-  0x046: a02f         |     pushl   %edx
-  0x048: a07f         |     pushl   %edi
-  0x04a: 30f000000000 |     irmovl  $0, %eax         # %eax = result = 0
-  0x050: 501510000000 |     mrmovl  16(%ebp), %ecx   # %ecx = len
-  0x056: 50250c000000 |     mrmovl  12(%ebp), %edx   # %edx = src
-  0x05c: 507508000000 |     mrmovl  8(%ebp), %edi    # %edi = dest
-  0x062: 7067000000   |     jmp     while_loop
-                      | 
-  0x067:              | while_loop:
-  0x067: 6211         |     andl    %ecx, %ecx       # check if %ecx == 0?
-  0x069: 7193000000   |     jle     return           # if so, jump to "return"
-  0x06e: 506200000000 |     mrmovl  (%edx), %esi     # %esi = val = *src
-  0x074: 30f304000000 |     irmovl  $4, %ebx         # %ebx = 4
-  0x07a: 6032         |     addl    %ebx, %edx       # src++
-  0x07c: 406700000000 |     rmmovl  %esi, (%edi)     # *dest = val
-  0x082: 6037         |     addl    %ebx, %edi       # dest++
-  0x084: 6360         |     xorl    %esi, %eax
-  0x086: 30f3ffffffff |     irmovl  $-1, %ebx
-  0x08c: 6031         |     addl    %ebx, %ecx       # len--
-  0x08e: 7067000000   |     jmp     while_loop
-                      | 
-  0x093:              | return:
-  0x093: b07f         |     popl    %edi
-  0x095: b02f         |     popl    %edx
-  0x097: b01f         |     popl    %ecx
-  0x099: 2054         |     rrmovl  %ebp, %esp
-  0x09b: b05f         |     popl    %ebp
-  0x09d: 90           |     ret
+  0x048:              | copy_block:
+  0x048: a05f         |     pushl   %ebp            # enter
+  0x04a: 2045         |     rrmovl  %esp, %ebp
+  0x04c: a03f         |     pushl   %ebx            # save %ebx -> len
+  0x04e: a07f         |     pushl   %edi            # save %edi -> immediate
+  0x050: a06f         |     pushl   %esi            # save %esi -> val
+  0x052: 6300         |     xorl    %eax, %eax      # %eax = result = 0
+  0x054: 503510000000 |     mrmovl  16(%ebp), %ebx  # %ebx = len
+  0x05a: 50250c000000 |     mrmovl  12(%ebp), %edx  # %edx = dest
+  0x060: 501508000000 |     mrmovl  8(%ebp), %ecx   # %ecx = src
+  0x066: 708b000000   |     jmp     test
+  0x06b:              | loop:
+  0x06b: 30f704000000 |     irmovl  $4, %edi        # %edi = 4
+  0x071: 506100000000 |     mrmovl  (%ecx), %esi    # val = *src
+  0x077: 6071         |     addl    %edi, %ecx      # src += 1
+  0x079: 406200000000 |     rmmovl  %esi, (%edx)    # *dest = val
+  0x07f: 6072         |     addl    %edi, %edx      # val += 1
+  0x081: 6360         |     xorl    %esi, %eax      # result ^= val
+  0x083: 30f7ffffffff |     irmovl  $-1, %edi       # %edx = -1
+  0x089: 6073         |     addl    %edi, %ebx      # len -= 1
+  0x08b:              | test:
+  0x08b: 6233         |     andl    %ebx, %ebx      # len == 0?
+  0x08d: 766b000000   |     jg      loop            # yes -> loop
+  0x092:              | return:
+  0x092: b06f         |     popl    %esi            # restore registers
+  0x094: b07f         |     popl    %edi
+  0x096: b03f         |     popl    %ebx
+  0x098: 2054         |     rrmovl  %ebp, %esp      # leave
+  0x09a: b05f         |     popl    %ebp
+  0x09c: 90           |     ret
                       | # Stack 
   0x400:              |     .pos    0x400
   0x400:              | stack:
