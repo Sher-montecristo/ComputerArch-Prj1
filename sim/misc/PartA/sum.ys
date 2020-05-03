@@ -13,7 +13,7 @@ main:
 # Sample linked list 
 .align 4
 ele1:
-    .long   0x00c
+    .long   0x00a
     .long   ele2
 ele2:
     .long   0x0b0

@@ -13,7 +13,7 @@
                       | # Sample linked list 
   0x018:              | .align 4
   0x018:              | ele1:
-  0x018: 0c000000     |     .long   0x00c
+  0x018: 0a000000     |     .long   0x00a
   0x01c: 20000000     |     .long   ele2
   0x020:              | ele2:
   0x020: b0000000     |     .long   0x0b0
