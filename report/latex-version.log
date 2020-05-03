@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2019.10.29)  3 MAY 2020 13:19
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2019.10.29)  3 MAY 2020 14:20
 entering extended mode
 **latex-version
 (c:\Users\18123\VscodeProject\ComputerArch-Prj1\report\latex-version.tex
@@ -182,6 +182,9 @@ LaTeX Warning: Label `Fig.partC-correctness' multiply defined.
 
 LaTeX Warning: Label `Fig.partC-correctness' multiply defined.
 
+
+LaTeX Warning: Label `Fig.partC-correctness' multiply defined.
+
 )
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 28.
 LaTeX Font Info:    ... okay on input line 28.
@@ -329,50 +332,60 @@ Underfull \hbox (badness 10000) in paragraph at lines 412--454
 [11 <c:/Users/18123/VscodeProject/ComputerArch-Prj1/report/partB-benchmark.jpg> <c:/Users/18123/VscodeProject/ComputerArch-Prj1/report/partB-regression-test.jpg> <c:/Users/18123/VscodeProject/ComputerArch-Prj1/report/partB-test-iaddl.jpg>] [12] [13] [14] [15] [16] <partC-regression-test.png, id=65, 608.2725pt x 312.16624pt>
 File: partC-regression-test.png Graphic file (type png)
  <use partC-regression-test.png>
-Package pdftex.def Info: partC-regression-test.png used on input line 694.
+Package pdftex.def Info: partC-regression-test.png used on input line 693.
 (pdftex.def)             Requested size: 241.49895pt x 123.93544pt.
  <partC-test2.png, id=67, 637.38126pt x 728.7225pt>
 File: partC-test2.png Graphic file (type png)
  <use partC-test2.png>
-Package pdftex.def Info: partC-test2.png used on input line 700.
+Package pdftex.def Info: partC-test2.png used on input line 699.
 (pdftex.def)             Requested size: 241.49895pt x 276.10571pt.
  [17] <partC-correctness-test.png, id=71, 246.9225pt x 174.6525pt>
 File: partC-correctness-test.png Graphic file (type png)
  <use partC-correctness-test.png>
-Package pdftex.def Info: partC-correctness-test.png used on input line 706.
-(pdftex.def)             Requested size: 241.49895pt x 170.8145pt.
+Package pdftex.def Info: partC-correctness-test.png used on input line 705.
+(pdftex.def)             Requested size: 137.9979pt x 97.60751pt.
  <partC-CPE-test.png, id=72, 194.7275pt x 174.6525pt>
 File: partC-CPE-test.png Graphic file (type png)
  <use partC-CPE-test.png>
-Package pdftex.def Info: partC-CPE-test.png used on input line 712.
-(pdftex.def)             Requested size: 241.49895pt x 216.6095pt.
+Package pdftex.def Info: partC-CPE-test.png used on input line 711.
+(pdftex.def)             Requested size: 137.9979pt x 123.77495pt.
  [18 <c:/Users/18123/VscodeProject/ComputerArch-Prj1/report/partC-regression-test.png> <c:/Users/18123/VscodeProject/ComputerArch-Prj1/report/partC-test2.png>] [19 <c:/Users/18123/VscodeProject/ComputerArch-Prj1/report/partC-correctness-test.png> <c:/Users/18123/VscodeProject/ComputerArch-Prj1/report/partC-CPE-test.png>] <partC-attempt1.jpg, id=84, 564.60938pt x 347.79938pt>
 File: partC-attempt1.jpg Graphic file (type jpg)
  <use partC-attempt1.jpg>
-Package pdftex.def Info: partC-attempt1.jpg used on input line 749.
+Package pdftex.def Info: partC-attempt1.jpg used on input line 747.
 (pdftex.def)             Requested size: 241.49895pt x 148.76538pt.
- [20] <partC-loop-demo.jpg, id=88, 329.73187pt x 299.61937pt>
+ <partC-loop-demo.jpg, id=85, 329.73187pt x 299.61937pt>
 File: partC-loop-demo.jpg Graphic file (type jpg)
  <use partC-loop-demo.jpg>
-Package pdftex.def Info: partC-loop-demo.jpg used on input line 757.
+Package pdftex.def Info: partC-loop-demo.jpg used on input line 756.
 (pdftex.def)             Requested size: 172.5pt x 156.74933pt.
- [21 <c:/Users/18123/VscodeProject/ComputerArch-Prj1/report/partC-attempt1.jpg> <c:/Users/18123/VscodeProject/ComputerArch-Prj1/report/partC-loop-demo.jpg>] [22] (c:\Users\18123\VscodeProject\ComputerArch-Prj1\report\latex-version.aux)
+ [20 <c:/Users/18123/VscodeProject/ComputerArch-Prj1/report/partC-attempt1.jpg>] <partC-larger-scale-test.jpg, id=89, 387.4475pt x 499.8675pt>
+File: partC-larger-scale-test.jpg Graphic file (type jpg)
+ <use partC-larger-scale-test.jpg>
+Package pdftex.def Info: partC-larger-scale-test.jpg used on input line 781.
+(pdftex.def)             Requested size: 137.9979pt x 178.03769pt.
+ [21 <c:/Users/18123/VscodeProject/ComputerArch-Prj1/report/partC-loop-demo.jpg>]
+Underfull \hbox (badness 10000) in paragraph at lines 785--788
+
+ []
+
+[22 <c:/Users/18123/VscodeProject/ComputerArch-Prj1/report/partC-larger-scale-test.jpg>] [23] (c:\Users\18123\VscodeProject\ComputerArch-Prj1\report\latex-version.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 4522 strings out of 495291
- 57861 string characters out of 3182829
+ 4527 strings out of 495291
+ 58015 string characters out of 3182829
  394436 words of memory out of 3000000
- 7683 multiletter control sequences out of 15000+200000
+ 7687 multiletter control sequences out of 15000+200000
  29451 words of font info for 47 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
  32i,7n,42p,796b,1512s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/CTEX/MiKTeX/fonts/enc/dvips/fontname/8r.enc}<C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/CTEX/MiKTeX/fonts/type1/bera/fvmb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/bera/fvmr8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/times/utmr8a.pfb>
-Output written on latex-version.pdf (22 pages, 1047475 bytes).
+Output written on latex-version.pdf (23 pages, 1084813 bytes).
 PDF statistics:
- 119 PDF objects out of 1000 (max. 8388607)
+ 123 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 61 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 66 words of extra memory for PDF output out of 10000 (max. 10000000)
 

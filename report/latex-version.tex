@@ -50,15 +50,15 @@ We achieve full scores in the benchmark testing \textbf{in just 2 hours},
 but we \textbf{spent 2 more days} researching all the potential methods to optimize the performance even further. 
 The following is our roadmap:
 \begin{itemize}
-        \item Change the order of the instruction sequence to avoid data hazard and structure hazards, which leaves $CPI = 12.96$.
-        \item Beyond the changes on instructions order, we use loop unrolling to reduce the number of conditional check and registers updating, which leaves $CPI = 9.83$
-        \item Use a binary search tree to find the precise remaining number of loops after several rounds of unrolling to achieve complete unrolling, which leaves $CPI = 8.95$
-        \item Modify the HCL file to achieve 100\% accuracy in branch prediction for certain code pattern, which brings $CPI$ down to $7.78$.
+        \item Change the order of the instruction sequence to avoid data hazard and structure hazards, which leaves $CPE = 12.96$.
+        \item Beyond the changes on instructions order, we use loop unrolling to reduce the number of conditional check and registers updating, which leaves $CPE = 9.83$
+        \item Use a binary search tree to find the precise remaining number of loops after several rounds of unrolling to achieve complete unrolling, which leaves $CPE = 8.95$
+        \item Modify the HCL file to achieve 100\% accuracy in branch prediction for certain code pattern, which brings $CPE$ down to $7.78$.
 \end{itemize}
 \textbf{Contribution}
 \\
-\textbf{Ziqi Zhao} : Part A (coding) \& Part B (coding) \& Part C (coding \& designing) \\
-\textbf{Yimin Zhao} : Part A (reviewing) \& Part B (reviewing) \& Part C (designing) \& project report
+\textbf{Ziqi Zhao} : Part A (coding) \& Part B (coding) \& Part C (coding \& designing) \& project report(reviewing) \\
+\textbf{Yimin Zhao} : Part A (reviewing \& coding) \& Part B (reviewing) \& Part C (designing) \& project report(writing)
 
 \section{Experiments}
 \subsection{Part A}
@@ -687,7 +687,6 @@ bool E_bubble =
 	E_icode in { IMRMOVL, IPOPL } &&
 	 E_dstM in { d_srcA, d_srcB};
 \end{lstlisting}
-
 \subsubsection{Evaluation}
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
@@ -703,17 +702,16 @@ bool E_bubble =
 \end{figure}
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
-        \includegraphics[width=0.7\textwidth]{partC-correctness-test.png} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \includegraphics[width=0.4\textwidth]{partC-correctness-test.png} %插入图片，[]中设置图片大小，{}中是图片文件名
         \caption{partC correctness test} %最终文档中希望显示的图片标题
         \label{Fig.partC-correctness} %用于文内引用的标签
 \end{figure}
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
-        \includegraphics[width=0.7\textwidth]{partC-CPE-test.png} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \includegraphics[width=0.4\textwidth]{partC-CPE-test.png} %插入图片，[]中设置图片大小，{}中是图片文件名
         \caption{partC CPE test} %最终文档中希望显示的图片标题
         \label{Fig.partC-CPE} %用于文内引用的标签
 \end{figure}
-
 \section{Conclusion}
 In this project, we completed the tasks of three parts, 
 which were gradually developed. The first part made us familiar with y86 assembly syntax, 
@@ -741,7 +739,7 @@ We only meet problems in Part C. They are two unsuccessful attempts to modify th
 Based on attempt 2, we have made some small changes to achieve the goal, which is explained in detail in \textbf{3.2 achievement}.
 \subsubsection{Attempt 1}
 In this attempt, we look at a particular code distribution, 
-which is t "andl rA, rA $\rightarrow$ JXX"(because in our code, there are a lot of this kind of code distributions). 
+which is "andl op1, op2 $\rightarrow$ JXX des"(because in our code, there are a lot of this kind of code distributions). 
 We hope that the branch prediction of JXX under this distribution can reach 100\% accuracy.
 The logic is shown in Figure 11:
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
@@ -750,24 +748,61 @@ The logic is shown in Figure 11:
         \caption{partC attempt1} %最终文档中希望显示的图片标题
         \label{Fig.partC-correctness} %用于文内引用的标签
 \end{figure}
-Basically, it means that when we detect a JXX after an andl, we will do branch prediction according to the value of the first op of "andl". Because in our ncopy.ys, there are a lot of this
-kind of codes:
+Basically, it means that when we detect a JXX after an andl, 
+we will do branch prediction according to the value of the first op of "andl". 
+Because in our ncopy.ys, there are a lot of this kind of codes:
 \begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
         \centering %图片居中
         \includegraphics[width=0.5\textwidth]{partC-loop-demo.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
         \caption{partC loop} %最终文档中希望显示的图片标题
         \label{Fig.partC-correctness} %用于文内引用的标签
 \end{figure}
-For "JXX op1, op2, destination".\\
-When $op1 == op2$ , everything is fine, the prediction accuracy will reach 100\%. But we don't check whether $op1 == op2$ in this attempt which will lead to errors for this case.
-When errors happen, we need to stall the pipeline (this is solved by setting D\_Bubble and E\_Bubble correctly) and retrieve the old branch destination address which is unsolvable because this information has been  
+For "andl op1, op2$\rightarrow$ JXX des".\\
+When $op1 == op2$ , everything is fine, the prediction accuracy will reach 100\%. 
+But we don't check whether $op1 == op2$ in this attempt which will lead to errors for this case.
+When errors happen, we need to stall the pipeline (this is solved by setting D\_Bubble and E\_Bubble correctly) 
+and retrieve the old branch destination address which is unsolvable because this information has been  
 lost in the pipeline when JXX enters its WB stage.
+\subsubsection{Attempt 2}
+In this attempt, we still look at a particular code distribution,
+which is 
 \subsection{Achievements}
+\subsubsection{Attemp 3 Eventually Succeed}
 
-[In this part you can list the strength of your project solution, like the performance improvement, coding readability, partner cooperation and so on. You can also write what you have learned if you like.]
+\subsubsection{Performance Improvement}
+By modifying the pipeline logic, we managed to accelerate the program to a very surprising degree:
+$$
+        CPE = 12.98 \rightarrow CPE = 9.83 \rightarrow CPE = 8.95 \rightarrow CPE = 7.78
+$$
+We even try to unlimit the number of the array size. By modifying benchmark.pl, 
+we push the upper bound to be 400 to test the best performance of our implementation (see in Figure 13).
+\begin{figure}[H] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+        \centering %图片居中
+        \includegraphics[width=0.4\textwidth]{partC-larger-scale-test.jpg} %插入图片，[]中设置图片大小，{}中是图片文件名
+        \caption{partC larger scale test} %最终文档中希望显示的图片标题
+        \label{Fig.partC-correctness} %用于文内引用的标签
+\end{figure}
+From analysis, we could safely estimate that the theoretical minimum $CPE$ should be around $5.0$. \\
+\\
+\textbf{So it's almost certain that the optimizations we've done under the existing ISA framework are close to extreme.}
+\subsubsection{Code readability}
+We put a lot of effort into the readability of the code for parts A.
+\begin{itemize}
+        \item For functions that contain loops, we can always break it down into three logical regions: "loop", "test", and "return".
+        \item For various registers, we always annotate its purpose with comments
+        \item For code that's not so obvious, we always leave the comment showing its counterpart in the C function next to it.
+\end{itemize}
+We have also left understandable and sufficient comments in the header of the modified files in partB and partC, 
+please open ncopy.ys, pipe-zzcc.hcl, SEQ-full.hcl to read
 
-
-
+\subsection{Feelings}
+This is a very interesting and valuable project. Ziqi and I work together perfectly. 
+When Ziqi achieved full score for partC in two hours, we started thinking about whether we could get CPE down to the limit of 5.
+We ended up spending two days talking, drawing, and writing code to test.
+But what was so exciting was that after two big failures, we finally got there in a very "weird" way.
+It should be noted, however, that there is an inherent problem with the simulator for the pipeline processor, 
+otherwise our attempt 2 should have been successful and would not have required special means to implement it.
+This project allowed us to reap the valuable sense of accomplishment brought by not giving up. 
+We are also very grateful to have been able to take this course and to be introduced to such a valuable project.
 %----------------------------------------------------------------------------------------
-
 \end{document}
