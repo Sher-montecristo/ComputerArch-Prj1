@@ -1,0 +1,2 @@
+In the Part C, we first achieved full marks by simply adding the `iaddl` instruction to `HCL` file, and in an almost software-only way. The hardware implementation of this approach is in `pipe-full.hcl`.
+After that, we made a further exploration and made a modification to the branch prediction part, and finally achieved a CPE of 7.79. The hardware implementation of this approach is in `pipe-zzcc.hcl`.

@@ -1,0 +1,225 @@
+#/* $begin ncopy-ys */
+
+# Bugen's note: to evalute this program, run:
+#  > make psim  [if necessary]
+#  > ../misc/yas ncopy.ys
+#  > ./check-len.pl < ncopy.yo
+#  > ./correctness.pl -p
+#  > ./benchmark.pl
+
+##################################################################
+# ncopy.ys - Copy a src block of len ints to dst.
+# Return the number of positive ints (>0) contained in src.
+#
+# Include your name and ID here.
+# 518030910211, ZiqiZhao
+# Describe how and why you modified the baseline code.
+# - Avoid "load and use":
+#   For the pipeline design in CS:APP 2e, "load and use" or "mrmovl" then "rmmovl" will cause penalty,
+#	which must be avoided to improve the performance. On the one hand, we rearranged the order of
+#	instructions to avoid stalling as much as possible. On the other hand, we use two registers to store
+#	the variable "val" , loading them separately and ahead of time.
+# - 10-way Loop Unrolling:
+#	There's much overhead in testing and updating procedure of loops, and one way to minimize it is to
+#	perform a technique named "loop unrolling". That is, we do multiple loops and update the relevant 
+#	data at once, to reduce the number of times we execute the 'add' and 'jxx' instructions. 
+# - Search Tree for Remaining Elements:
+#   For large inputs, the more ways we unroll the loops, the better the program performs. However, for 
+#	small inputs, it is important to choose a good method to process the remaining elements. The simplest
+#  	way is to write another loop for them, but a much better way is to totally unroll the code, that is,
+#  	jump to different position for different number of remaining ones. Since Y86 does not support relative
+#  	jump instruction, we designed a search tree to get the correct jump destination for each possibility.
+# - Optimized for Our Branch Prediction Design  [see also: pipe-zzcc.hcl]
+#   For this program, a significant performance factor is the branch prediction failure for count++. In 
+#  	"pipe-zzcc.hcl", we made a special optimization for the situation like this:
+#   Instruction:   any    non-alu    jxx
+#   Stage:         EX       ID       IF
+#   Note that in this case, we can forward the conditions from EX stage to IF and predict the branch with
+#  	100% accuracy. Thus, we optimized the program to ensure that there were as many of these patterns as
+#  	possible and took much advantage of it, which leads to an average CPE of 7.79.
+##################################################################
+# Do not modify this portion
+# Function prologue.
+ncopy:	pushl %ebp		# Save old frame pointer
+	rrmovl %esp,%ebp	# Set up new frame pointer
+	pushl %esi		# Save callee-save regs
+	pushl %ebx
+	pushl %edi
+	mrmovl 8(%ebp),%ebx	# src
+	mrmovl 16(%ebp),%edx	# len
+	mrmovl 12(%ebp),%ecx	# dst
+
+##################################################################
+# You can modify this portion
+
+# Entry
+	iaddl $-9, %edx		# len -= 9, i.e., initial_len <= 9?
+	irmovl $0, %eax		# count = 0
+	jle Remaining		# if so, goto Remaining
+
+# Loop unrolling part
+Loop0:	
+	mrmovl (%ebx), %esi	# valA = src[0]
+	mrmovl 4(%ebx), %edi	# valB = src[1]
+	andl %esi, %esi		# valA <= 0?
+	rmmovl %esi, (%ecx)	# dst[0] = valA
+	jle Loop1		# if so, goto next loop
+	iaddl $1, %eax		# count++
+Loop1:	
+	mrmovl 8(%ebx), %esi	# valA = src[2]
+	andl %edi, %edi		# valB <= 0?
+	rmmovl %edi, 4(%ecx)	# dst[1] = valB
+	jle Loop2		# if so, goto next loop
+	iaddl $1, %eax		# count++
+Loop2:
+	mrmovl 12(%ebx), %edi	# valB = src[3]
+	andl %esi, %esi		# valA <= 0?
+	rmmovl %esi, 8(%ecx)	# dst[2] = valA
+	jle Loop3		# if so, goto next loop
+	iaddl $1, %eax		# count++
+Loop3:	
+	mrmovl 16(%ebx), %esi	# valA = src[4]
+	andl %edi, %edi		# valB <= 0?
+	rmmovl %edi, 12(%ecx)	# dst[3] = valB
+	jle Loop4		# if so, goto next loop
+	iaddl $1, %eax		# count++
+Loop4:
+	mrmovl 20(%ebx), %edi	# valB = src[5]
+	andl %esi, %esi		# valA <= 0?
+	rmmovl %esi, 16(%ecx)	# dst[4] = valA
+	jle Loop5		# if so, goto next loop
+	iaddl $1, %eax		# count++
+Loop5:	
+	mrmovl 24(%ebx), %esi	# valA = src[6]
+	andl %edi, %edi		# valB <= 0?
+	rmmovl %edi, 20(%ecx)	# dst[5] = valB
+	jle Loop6		# if so, goto next loop
+	iaddl $1, %eax		# count++
+Loop6:
+	mrmovl 28(%ebx), %edi	# valB = src[7]
+	andl %esi, %esi		# valA <= 0?
+	rmmovl %esi, 24(%ecx)	# dst[6] = valA
+	jle Loop7		# if so, goto next loop
+	iaddl $1, %eax		# count++
+Loop7:	
+	mrmovl 32(%ebx), %esi	# valA = src[8]
+	andl %edi, %edi		# valB <= 0?
+	rmmovl %edi, 28(%ecx)	# dst[7] = valB
+	jle Loop8		# if so, goto next loop
+	iaddl $1, %eax		# count++
+Loop8:
+	mrmovl 36(%ebx), %edi	# valB = src[9]
+	andl %esi, %esi		# valA <= 0?
+	rmmovl %esi, 32(%ecx)	# dst[8] = valA
+	jle Loop9		# if so, goto next loop
+	iaddl $1, %eax		# count++
+Loop9:
+	andl %edi, %edi		# valB <= 0?
+	rmmovl %edi, 36(%ecx)	# dst[9] = valB
+	jle LoopEnd		# if so, goto loop end
+	iaddl $1, %eax
+LoopEnd:
+	iaddl $40, %ecx		# dst += 10 * 4
+	iaddl $40, %ebx		# src += 10 * 4
+	iaddl $-10, %edx	# len -= 10
+	jg Loop0		# if so, goto Loop0
+				# else, goto process remaining elements
+
+# The following block is a binary search tree to 
+# find the number of remaining loops (which must be less than 10) at minimal cost
+Remaining:
+	iaddl $6, %edx		# [-9,0] -> [-3,6]	(+3)
+RemTest:
+	irmovl $0, %esi
+	jg RemTestR
+	je Rem3
+RemTestL:
+	iaddl $2, %edx		# [-3,-1] -> [-1,1]	(+1)
+	je Rem1
+	jg Rem2
+	jmp Done		# -1 + 1 = 0
+RemTestR:
+	iaddl $-3, %edx		# [1,6] -> [-2,3]	(+6)
+	jg RemTestRR
+	je Rem6
+RemTestRL:
+	iaddl $1, %edx		# [-2,-1] -> [-1,0]	(+5)
+	jl Rem4
+	je Rem5
+RemTestRR:
+	iaddl $-2, %edx		# [1,3] -> [-1,1]	(+8)
+	jl Rem7
+	je Rem8
+
+Rem9:
+	mrmovl 32(%ebx), %esi	# valA = src[8]
+	rmmovl %esi, 32(%ecx)	# dst[8] = valA
+Rem8:	# Note that %esi == 0, directly jumping here
+	#  implies that RemXb will performs correctly.
+	andl %esi, %esi		# valA <= 0?
+	mrmovl 28(%ebx), %esi	# valA = src[7]
+	jle Rem8b		# if so, goto Rem8b
+	iaddl $1, %eax		# count++
+Rem8b:	rmmovl %esi, 28(%ecx)	# dst[7] = valA
+Rem7:	
+	andl %esi, %esi		# valA <= 0?
+	mrmovl 24(%ebx), %esi	# valA = src[6]
+	jle Rem7b		# if so, goto Rem7b
+	iaddl $1, %eax		# count++
+Rem7b:	rmmovl %esi, 24(%ecx)	# dst[6] = valA
+Rem6:	
+	andl %esi, %esi		# valA <= 0?
+	mrmovl 20(%ebx), %esi	# valA = src[5]
+	jle Rem6b		# if so, goto Rem6b
+	iaddl $1, %eax		# count++
+Rem6b:	rmmovl %esi, 20(%ecx)	# dst[5] = valA
+Rem5:	
+	andl %esi, %esi		# valA <= 0?
+	mrmovl 16(%ebx), %esi	# valA = src[4]
+	jle Rem5b		# if so, goto Rem5b
+	iaddl $1, %eax		# count++
+Rem5b:	rmmovl %esi, 16(%ecx)	# dst[4] = valA
+Rem4:	
+	andl %esi, %esi		# valA <= 0?
+	mrmovl 12(%ebx), %esi	# valA = src[3]
+	jle Rem4b		# if so, goto Rem4b
+	iaddl $1, %eax		# count++
+Rem4b:	rmmovl %esi, 12(%ecx)	# dst[3] = valA
+Rem3:	
+	andl %esi, %esi		# valA <= 0?
+	mrmovl 8(%ebx), %esi	# valA = src[2]
+	jle Rem3b		# if so, goto Rem3b
+	iaddl $1, %eax		# count++
+Rem3b:	rmmovl %esi, 8(%ecx)	# dst[2] = valA
+Rem2:	
+	andl %esi, %esi		# valA <= 0?
+	mrmovl 4(%ebx), %esi	# valA = src[1]
+	jle Rem2b		# if so, goto Rem2b
+	iaddl $1, %eax		# count++
+Rem2b:	rmmovl %esi, 4(%ecx)	# dst[1] = valA
+Rem1:	
+	andl %esi, %esi		# valA <= 0?
+	mrmovl (%ebx), %esi	# valA = src[0]
+	jle Rem1b		# if so, goto Rem1b
+	iaddl $1, %eax		# count++
+Rem1b:	
+	andl %esi, %esi		# valA <= 0?
+	rmmovl %esi, (%ecx)	# dst[0] = valA
+	jle Done		# if so, goto Done
+	iaddl $1, %eax		# count++
+
+
+##################################################################
+# Do not modify the following section of code
+# Function epilogue.
+Done:
+	popl %edi               # Restore callee-save registers
+	popl %ebx
+	popl %esi
+	rrmovl %ebp, %esp
+	popl %ebp
+	ret
+##################################################################
+# Keep the following label at the end of your function
+End:
+#/* $end ncopy-ys */

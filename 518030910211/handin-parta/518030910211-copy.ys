@@ -1,0 +1,64 @@
+# 518030910211 ZiqiZhao
+# 518030910188 YiminZhao
+
+# Set up stack
+    .pos    0
+    irmovl  stack, %esp
+    rrmovl  %esp, %ebp
+    irmovl  $3, %eax        # len
+    pushl   %eax
+    irmovl  dest, %eax      # dest
+    pushl   %eax
+    irmovl  src, %eax       # src
+    pushl   %eax
+    call    copy_block
+    halt
+
+.align 4
+# Source block
+src:
+    .long 0x00a
+    .long 0x0b0
+    .long 0xc00
+    .long 0x888             # Should not copy this
+
+# Destination block
+dest:
+    .long 0x111
+    .long 0x222
+    .long 0x333
+    .long 0x999             # Should not write this
+
+copy_block:
+    pushl   %ebp            # enter
+    rrmovl  %esp, %ebp
+    pushl   %ebx            # save %ebx -> len
+    pushl   %edi            # save %edi -> immediate
+    pushl   %esi            # save %esi -> val
+    xorl    %eax, %eax      # %eax = result = 0
+    mrmovl  16(%ebp), %ebx  # %ebx = len
+    mrmovl  12(%ebp), %edx  # %edx = dest
+    mrmovl  8(%ebp), %ecx   # %ecx = src
+    jmp     test
+loop:
+    irmovl  $4, %edi        # %edi = 4
+    mrmovl  (%ecx), %esi    # val = *src
+    addl    %edi, %ecx      # src += 1
+    rmmovl  %esi, (%edx)    # *dest = val
+    addl    %edi, %edx      # val += 1
+    xorl    %esi, %eax      # result ^= val
+    irmovl  $-1, %edi       # %edx = -1
+    addl    %edi, %ebx      # len -= 1
+test:
+    andl    %ebx, %ebx      # len > 0?
+    jg      loop            # yes -> loop
+return:
+    popl    %esi            # restore registers
+    popl    %edi
+    popl    %ebx
+    rrmovl  %ebp, %esp      # leave
+    popl    %ebp
+    ret
+# Stack 
+    .pos    0x400
+stack:
