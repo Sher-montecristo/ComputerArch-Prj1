@@ -1,0 +1,27 @@
+  0x000: 30f460000000 | 	irmovl Stack1,%esp
+  0x006: 30f245000000 | 	irmovl rtnpt,%edx
+  0x00c: 402400000000 | 	rmmovl %edx,(%esp)   # Put return point on top of Stack1
+  0x012: 30f068000000 | 	irmovl Stack2,%eax
+  0x018: 404000000000 | 	rmmovl %esp,(%eax)   # Put Stack1 on top of Stack2
+  0x01e: 30f470000000 | 	irmovl Stack3,%esp   # Point to Stack3
+  0x024: a02f         |         pushl %edx
+  0x026: 2045         |         rrmovl %esp,%ebp
+  0x028: 30f203000000 | 	irmovl $3,%edx       # Initialize
+  0x02e: 6333         | 	xorl   %ebx,%ebx     # Set condition codes to ZF=1,SF=0,OF=0
+                      | #       Here's where the 4 instruction sequence goes
+  0x030: 504000000000 |         mrmovl (%eax),%esp
+  0x036: 504000000000 |         mrmovl (%eax),%esp
+  0x03c: 10           |         nop
+  0x03d: 90           |         ret
+                      | #	Now finish things off
+  0x03e: 30f303000000 | 	irmovl $3,%ebx       # Not reached when sequence ends with ret
+  0x044: 00           | 	halt                  # 
+  0x045: 30f605000000 | rtnpt:  irmovl $5,%esi       # Return point
+  0x04b: 00           | 	halt
+  0x060:              | .pos 0x60
+  0x060:              | 	Stack1:
+  0x068:              | .pos 0x68
+  0x068:              | 	Stack2:
+  0x070:              | .pos 0x70
+  0x070:              | 	Stack3:
+  0x070: 00           |         halt

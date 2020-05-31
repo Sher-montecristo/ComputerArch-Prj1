@@ -9,6 +9,9 @@ YAS=$(ISADIR)/yas
 .ys.yo:
 	$(YAS) $*.ys
 
+my:
+	./ctest.pl -s $(SIM) $(TFLAGS)
+
 test:
 	./optest.pl -s $(SIM) $(TFLAGS)
 	./jtest.pl -s $(SIM) $(TFLAGS)

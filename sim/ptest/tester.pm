@@ -84,7 +84,7 @@ sub run_sim_test
 	}
     }
     $tcount++;
-    system "rm $tname.yo";
+    ## system "rm $tname.yo";
 }
 
 sub run_vlog_test
