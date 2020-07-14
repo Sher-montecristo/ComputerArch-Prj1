@@ -18,7 +18,7 @@ The following is the roadmap to finish this part:
 We achieve full scores in the benchmark testing **in just 2 hours**, 
 but we **spent 2 more days** researching all the potential methods to optimize the performance even further. 
 The following is our roadmap:
-- Change the order of the instruction sequence to avoid data hazard and structure hazards as much as possible, which leaves $CPE = 12.96$.
-- Beyond the changes on instruction order, we apply loop unrolling to reduce the number of conditional check and registers updating, which leaves $CPE = 9.83$.
-- Use a binary search tree to find the precise remaining number of elements after several rounds of unrolling to achieve complete unrolling, which leaves $CPE = 8.95$.
-- Modify the pipeline design in \texttt{HCL} file to achieve 100\% accuracy in branch prediction for certain code pattern, which **brings $\mathbf{CPE}$ down to $7.79$**.
+- Change the order of the instruction sequence to avoid data hazard and structure hazards as much as possible, which leaves *CPE = 12.96*.
+- Beyond the changes on instruction order, we apply loop unrolling to reduce the number of conditional check and registers updating, which leaves *CPE = 9.83*.
+- Use a binary search tree to find the precise remaining number of elements after several rounds of unrolling to achieve complete unrolling, which leaves *CPE = 8.95*.
+- Modify the pipeline design in **HCL** file to achieve 100% accuracy in branch prediction for certain code pattern, which **brings CPE down to 7.79**.
